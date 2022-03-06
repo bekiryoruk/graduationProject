@@ -12,6 +12,8 @@ target 'AwesomeCamera' do
     :hermes_enabled => false
   )
 
+  pod 'react-native-immediate-phone-call', :path => '../node_modules/react-native-immediate-phone-call'
+
   target 'AwesomeCameraTests' do
     inherit! :complete
     # Pods for testing
