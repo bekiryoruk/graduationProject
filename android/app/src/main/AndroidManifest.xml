@@ -2,10 +2,11 @@
   package="com.awesomecamera">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    ‍<uses-permission android:name="android.permission.CAMERA"></uses-permission>
-    ‍<uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
-    ‍<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.CAMERA"></uses-permission>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
       android:name=".MainApplication"

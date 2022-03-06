@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import {callPhone} from '../../helpers';
 
 const flashModeOrder = {
   off: 'on',
@@ -298,7 +299,7 @@ export default class CameraScreen extends React.Component {
                 styles.picButton,
                 {flex: 0.3, alignSelf: 'flex-end'},
               ]}
-              onPress={() => Alert.alert('Simple Button pressed')}>
+              onPress={() => callPhone('+905436083152')}>
               <Text style={styles.flipText}> CALL </Text>
             </TouchableOpacity>
             <TouchableOpacity
