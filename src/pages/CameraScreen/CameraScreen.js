@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
-import {callPhone} from '../../helpers';
+import {callPhone, sendSMS} from '../../helpers';
 
 const flashModeOrder = {
   off: 'on',
@@ -307,7 +307,7 @@ export default class CameraScreen extends React.Component {
                 styles.flipButton,
                 styles.picButton,
               ]}
-              onPress={() => Alert.alert('Simple Button pressed')}>
+              onPress={() => sendSMS(['+905436083152'], "selam")}>
               <Text style={styles.flipText}> SMS </Text>
             </TouchableOpacity>
           </View>
