@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import {callPhone, sendSMS} from '../../helpers';
 
 const flashModeOrder = {
   off: 'on',
@@ -99,7 +100,7 @@ export default class CameraScreen extends React.Component {
   };
 
   callAnyone = async function () {
-    console.log('callllll ');
+    callPhone('+905436083152');
   };
 
   setTrueSmsButton() {
@@ -120,7 +121,7 @@ export default class CameraScreen extends React.Component {
   }
 
   sendSms = async function () {
-    console.log('sms ');
+    sendSMS(['+905436083152'], "selam")
   };
 
   toggle = value => () => {
