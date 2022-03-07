@@ -8,7 +8,6 @@ import {
   Slider,
   TouchableWithoutFeedback,
   Dimensions,
-  Alert,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
@@ -29,7 +28,7 @@ const wbOrder = {
   incandescent: 'auto',
 };
 
-const landmarkSize = 2;
+const landmarkSize = 10;
 
 export default class CameraScreen extends React.Component {
   state = {
@@ -49,6 +48,10 @@ export default class CameraScreen extends React.Component {
     ratio: '16:9',
     canDetectFaces: false,
     canDetectText: false,
+    buttonsHover: {
+      callButton: true,
+      smsButton: false,
+    },
     canDetectBarcode: false,
     faces: [],
     blinkDetected: false,
@@ -74,7 +77,6 @@ export default class CameraScreen extends React.Component {
       x = pageY / screenHeight;
       y = -(pageX / screenWidth) + 1;
     }
-
     this.setState({
       autoFocusPoint: {
         normalized: {x, y},
@@ -97,6 +99,31 @@ export default class CameraScreen extends React.Component {
     }
   };
 
+  callAnyone = async function () {
+    callPhone('+905436083152');
+  };
+
+  setTrueSmsButton() {
+    this.setState({
+      buttonsHover: {
+        callButton: false,
+        smsButton: true,
+      },
+    });
+  }
+  setTrueCallButton() {
+    this.setState({
+      buttonsHover: {
+        callButton: true,
+        smsButton: false,
+      },
+    });
+  }
+
+  sendSms = async function () {
+    sendSMS(['+905436083152'], "selam")
+  };
+
   toggle = value => () => {
     this.setState(prevState => ({[value]: !prevState[value]}));
     console.log(value, this.state[`${value}`]);
@@ -107,6 +134,12 @@ export default class CameraScreen extends React.Component {
     const leftEye = faces[0].leftEyeOpenProbability;
     const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
+    if (faces[0].leftEyePosition.x < 330) {
+      this.setTrueCallButton();
+    } else {
+      this.setTrueSmsButton();
+    }
+
     // console.log(
     //   JSON.stringify({
     //     rightEyeOpenProbability: rightEye,
@@ -124,6 +157,11 @@ export default class CameraScreen extends React.Component {
         }),
       );
       this.setState({blinkDetected: true});
+      if (this.state.buttonsHover.callButton) {
+        this.callAnyone();
+      } else {
+        this.sendSms();
+      }
     }
     if (this.state.blinkDetected && bothEyes >= 0.9) {
       this.takePicture(faces);
@@ -184,23 +222,12 @@ export default class CameraScreen extends React.Component {
       <View key={`landmarks-${face.faceID}`}>
         {renderLandmark(face.leftEyePosition)}
         {renderLandmark(face.rightEyePosition)}
-        {renderLandmark(face.leftEarPosition)}
-        {renderLandmark(face.rightEarPosition)}
-        {renderLandmark(face.leftCheekPosition)}
-        {renderLandmark(face.rightCheekPosition)}
-        {renderLandmark(face.leftMouthPosition)}
-        {renderLandmark(face.mouthPosition)}
-        {renderLandmark(face.rightMouthPosition)}
-        {renderLandmark(face.noseBasePosition)}
-        {renderLandmark(face.bottomMouthPosition)}
       </View>
     );
   }
 
   renderFaces = () => (
-    <View style={styles.facesContainer} pointerEvents="none">
-      {this.state.faces.map(this.renderFace)}
-    </View>
+    <View style={styles.facesContainer} pointerEvents="none"></View>
   );
 
   renderLandmarks = () => (
@@ -211,7 +238,6 @@ export default class CameraScreen extends React.Component {
 
   renderCamera() {
     const {canDetectFaces} = this.state;
-
     const drawFocusRingPosition = {
       top: this.state.autoFocusPoint.drawRectPosition.y - 32,
       left: this.state.autoFocusPoint.drawRectPosition.x - 32,
@@ -286,28 +312,28 @@ export default class CameraScreen extends React.Component {
             }}>
             <TouchableOpacity
               style={[
-                styles.flipButton,
-                styles.picButton,
+                this.state.buttonsHover.callButton
+                  ? styles.selectedButton
+                  : styles.flipButton,
+                this.state.buttonsHover.callButton
+                  ? styles.selectedPicButton
+                  : styles.picButton,
                 {flex: 0.3, alignSelf: 'flex-end'},
               ]}
-              onPress={this.takePicture.bind(this)}>
-              <Text style={styles.flipText}> SNAP </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.flipButton,
-                styles.picButton,
-                {flex: 0.3, alignSelf: 'flex-end'},
-              ]}
-              onPress={() => callPhone('+905436083152')}>
+              onPress={this.callAnyone.bind(this)}>
               <Text style={styles.flipText}> CALL </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
-                styles.flipButton,
-                styles.picButton,
+                this.state.buttonsHover.smsButton
+                  ? styles.selectedButton
+                  : styles.flipButton,
+                this.state.buttonsHover.smsButton
+                  ? styles.selectedPicButton
+                  : styles.picButton,
+                {flex: 0.3, alignSelf: 'flex-end'},
               ]}
-              onPress={() => sendSMS(['+905436083152'], "selam")}>
+              onPress={this.sendSms.bind(this)}>
               <Text style={styles.flipText}> SMS </Text>
             </TouchableOpacity>
           </View>
@@ -342,6 +368,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  selectedButton: {
+    flex: 0.3,
+    height: 40,
+    marginHorizontal: 2,
+    marginBottom: 10,
+    marginTop: 10,
+    borderRadius: 8,
+    borderColor: 'red',
+    borderWidth: 1,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   autoFocusBox: {
     position: 'absolute',
     height: 64,
@@ -363,6 +402,9 @@ const styles = StyleSheet.create({
   },
   picButton: {
     backgroundColor: 'darkseagreen',
+  },
+  selectedPicButton: {
+    backgroundColor: 'red',
   },
   facesContainer: {
     position: 'absolute',
