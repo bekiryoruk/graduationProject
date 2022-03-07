@@ -1,106 +1,29 @@
 import React from 'react';
 import {
-  StyleSheet,
   Text,
-  Image,
   View,
   TouchableOpacity,
-  Slider,
-  TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
+import styles from './CameraScreen.styles';
 
-const flashModeOrder = {
-  off: 'on',
-  on: 'auto',
-  auto: 'torch',
-  torch: 'off',
-};
-
-const wbOrder = {
-  auto: 'sunny',
-  sunny: 'cloudy',
-  cloudy: 'shadow',
-  shadow: 'fluorescent',
-  fluorescent: 'incandescent',
-  incandescent: 'auto',
-};
 
 const landmarkSize = 10;
 
 export default class CameraScreen extends React.Component {
   state = {
-    flash: 'off',
     zoom: 0,
-    autoFocus: 'on',
-    autoFocusPoint: {
-      normalized: {x: 0.5, y: 0.5}, // normalized values required for autoFocusPointOfInterest
-      drawRectPosition: {
-        x: Dimensions.get('window').width * 0.5 - 32,
-        y: Dimensions.get('window').height * 0.5 - 32,
-      },
-    },
-    depth: 0,
-    type: 'front', // Camera Front or Back
-    whiteBalance: 'auto',
+    type: 'front',
     ratio: '16:9',
     canDetectFaces: false,
-    canDetectText: false,
     buttonsHover: {
       callButton: true,
       smsButton: false,
     },
-    canDetectBarcode: false,
     faces: [],
     blinkDetected: false,
-    blinkedimage: null,
-  };
-
-  toggleFacing() {
-    this.setState({
-      type: this.state.type === 'back' ? 'front' : 'back',
-    });
-  }
-
-  touchToFocus(event) {
-    const {pageX, pageY} = event.nativeEvent;
-    const screenWidth = Dimensions.get('window').width;
-    const screenHeight = Dimensions.get('window').height;
-    const isPortrait = screenHeight > screenWidth;
-
-    let x = pageX / screenWidth;
-    let y = pageY / screenHeight;
-    // Coordinate transform for portrait. See autoFocusPointOfInterest in docs for more info
-    if (isPortrait) {
-      x = pageY / screenHeight;
-      y = -(pageX / screenWidth) + 1;
-    }
-    this.setState({
-      autoFocusPoint: {
-        normalized: {x, y},
-        drawRectPosition: {x: pageX, y: pageY},
-      },
-    });
-  }
-
-  setFocusDepth(depth) {
-    this.setState({
-      depth,
-    });
-  }
-
-  takePicture = async function () {
-    if (this.camera) {
-      const data = await this.camera.takePictureAsync();
-      console.warn('takePicture ', data);
-      this.setState({blinkedimage: data.path});
-    }
-  };
-
-  callAnyone = async function () {
-    callPhone('+905436083152');
   };
 
   setTrueSmsButton() {
@@ -120,19 +43,25 @@ export default class CameraScreen extends React.Component {
     });
   }
 
+  // USER FUNCTIONS
+
+  // calls someone
+  callAnyone = async function () {
+    callPhone('+905436083152');
+  };
+
+  // sends sms to some numbers
   sendSms = async function () {
     sendSMS(['+905436083152'], "selam")
   };
 
   toggle = value => () => {
     this.setState(prevState => ({[value]: !prevState[value]}));
-    console.log(value, this.state[`${value}`]);
   };
 
   facesDetected = ({faces}) => {
     const rightEye = faces[0].rightEyeOpenProbability;
     const leftEye = faces[0].leftEyeOpenProbability;
-    const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
     if (faces[0].leftEyePosition.x < 330) {
       this.setTrueCallButton();
@@ -140,22 +69,7 @@ export default class CameraScreen extends React.Component {
       this.setTrueSmsButton();
     }
 
-    // console.log(
-    //   JSON.stringify({
-    //     rightEyeOpenProbability: rightEye,
-    //     leftEyeOpenProbability: leftEye,
-    //     smilingProbability: smileprob,
-    //     blinkProb: bothEyes,
-    //   }),
-    // );
     if (bothEyes <= 0.3) {
-      console.log(
-        JSON.stringify({
-          blinkDetected: 'blinkDetected',
-          rightEyeOpenProbability: rightEye,
-          leftEyeOpenProbability: leftEye,
-        }),
-      );
       this.setState({blinkDetected: true});
       if (this.state.buttonsHover.callButton) {
         this.callAnyone();
@@ -164,7 +78,6 @@ export default class CameraScreen extends React.Component {
       }
     }
     if (this.state.blinkDetected && bothEyes >= 0.9) {
-      this.takePicture(faces);
       this.setState({blinkDetected: false});
     }
     this.setState({faces});
@@ -212,6 +125,8 @@ export default class CameraScreen extends React.Component {
           style={[
             styles.landmark,
             {
+              width: landmarkSize,
+              height: landmarkSize,
               left: position.x - landmarkSize / 2,
               top: position.y - landmarkSize / 2,
             },
@@ -226,10 +141,6 @@ export default class CameraScreen extends React.Component {
     );
   }
 
-  renderFaces = () => (
-    <View style={styles.facesContainer} pointerEvents="none"></View>
-  );
-
   renderLandmarks = () => (
     <View style={styles.facesContainer} pointerEvents="none">
       {this.state.faces.map(this.renderLandmarksOfFace)}
@@ -238,22 +149,13 @@ export default class CameraScreen extends React.Component {
 
   renderCamera() {
     const {canDetectFaces} = this.state;
-    const drawFocusRingPosition = {
-      top: this.state.autoFocusPoint.drawRectPosition.y - 32,
-      left: this.state.autoFocusPoint.drawRectPosition.x - 32,
-    };
-    // handleFaceDetected = faceArray => {
-    //   console.log('handleFaceDetected', faceArray);
-    // };
+
     return (
       <RNCamera
         ref={ref => {
           this.camera = ref;
         }}
-        style={{
-          flex: 1,
-          justifyContent: 'space-between',
-        }}
+        style={styles.camera}
         type={this.state.type}
         zoom={this.state.zoom}
         ratio={this.state.ratio}
@@ -274,42 +176,14 @@ export default class CameraScreen extends React.Component {
             : undefined
         }
         onCameraReady={() => {
-          console.log('onCameraReady');
           this.setState({canDetectFaces: true});
         }}
         onFacesDetected={this.state.canDetectFaces ? this.facesDetected : null}
         onFaceDetectionError={error => console.log('FDError', error)} // This is never triggered
       >
-        <View
-          style={{
-            flex: 0.5,
-            height: 72,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}>
-          <View
-            style={{
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-            }}>
-            <TouchableOpacity
-              style={styles.flipButton}
-              onPress={this.toggleFacing.bind(this)}>
-              <Text style={styles.flipText}> FLIP </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
         <View style={{bottom: 0}}>
           <View
-            style={{
-              height: 56,
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-              alignSelf: 'flex-end',
-            }}>
+            style={styles.actionButtons}>
             <TouchableOpacity
               style={[
                 this.state.buttonsHover.callButton
@@ -338,7 +212,6 @@ export default class CameraScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        {this.renderFaces()}
         {canDetectFaces && this.renderLandmarks()}
       </RNCamera>
     );
@@ -348,105 +221,3 @@ export default class CameraScreen extends React.Component {
     return <View style={styles.container}>{this.renderCamera()}</View>;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: '#000',
-  },
-  flipButton: {
-    flex: 0.3,
-    height: 40,
-    marginHorizontal: 2,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 8,
-    borderColor: 'white',
-    borderWidth: 1,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selectedButton: {
-    flex: 0.3,
-    height: 40,
-    marginHorizontal: 2,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 8,
-    borderColor: 'red',
-    borderWidth: 1,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  autoFocusBox: {
-    position: 'absolute',
-    height: 64,
-    width: 64,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'white',
-    opacity: 0.4,
-  },
-  flipText: {
-    color: 'white',
-    fontSize: 15,
-  },
-  zoomText: {
-    position: 'absolute',
-    bottom: 70,
-    zIndex: 2,
-    left: 2,
-  },
-  picButton: {
-    backgroundColor: 'darkseagreen',
-  },
-  selectedPicButton: {
-    backgroundColor: 'red',
-  },
-  facesContainer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    top: 0,
-  },
-  face: {
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 2,
-    position: 'absolute',
-    borderColor: '#FFD700',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  landmark: {
-    width: landmarkSize,
-    height: landmarkSize,
-    position: 'absolute',
-    backgroundColor: 'red',
-  },
-  faceText: {
-    color: '#FFD700',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    margin: 10,
-    backgroundColor: 'transparent',
-  },
-  text: {
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 2,
-    position: 'absolute',
-    borderColor: '#F00',
-    justifyContent: 'center',
-  },
-  textBlock: {
-    color: '#F00',
-    position: 'absolute',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-  },
-});
