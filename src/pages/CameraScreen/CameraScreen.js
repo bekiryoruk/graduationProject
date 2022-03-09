@@ -8,6 +8,7 @@ import {
   Slider,
   TouchableWithoutFeedback,
   Dimensions,
+  Linking,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
@@ -51,6 +52,7 @@ export default class CameraScreen extends React.Component {
     buttonsHover: {
       callButton: true,
       smsButton: false,
+      musicButton: false,
     },
     canDetectBarcode: false,
     faces: [],
@@ -99,29 +101,65 @@ export default class CameraScreen extends React.Component {
     }
   };
 
-  callAnyone = async function () {
-    callPhone('+905436083152');
-  };
+  /*manageButtonStates(type) {
+    this.setState({
+      buttonsHover: {
+        callButton: false,
+        smsButton: false,
+        musicButton: false,
+      },
+    });
+    if (type === 'call') {
+      this.setState({ buttonsHover: { callButton: true } });
+    } else if (type === 'sms') {
+      this.setState({ buttonsHover: { smsButton: true }});
+    } else {
+      this.setState({ buttonsHover: {  musicButton: true }});
+    }
+  }*/
 
   setTrueSmsButton() {
     this.setState({
       buttonsHover: {
         callButton: false,
         smsButton: true,
+        musicButton: false,
       },
     });
   }
+
   setTrueCallButton() {
     this.setState({
       buttonsHover: {
         callButton: true,
         smsButton: false,
+        musicButton: false,
       },
     });
   }
 
+  setTrueMusicButton() {
+    this.setState({
+      buttonsHover: {
+        callButton: false,
+        smsButton: false,
+        musicButton: true,
+      },
+    });
+  }
+
+  callAnyone = async function () {
+    callPhone('+905436083152');
+  };
+
   sendSms = async function () {
-    sendSMS(['+905436083152'], "selam")
+    sendSMS(['+905436083152'], 'selam');
+  };
+
+  openSpotify = async function () {
+    Linking.openURL(
+      'https://open.spotify.com/playlist/37i9dQZF1E4yMk2wN0k5C4?si=57ce9467c865431d',
+    );
   };
 
   toggle = value => () => {
@@ -134,10 +172,15 @@ export default class CameraScreen extends React.Component {
     const leftEye = faces[0].leftEyeOpenProbability;
     const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
-    if (faces[0].leftEyePosition.x < 330) {
+    if (faces[0].leftEyePosition.x < 280) {
       this.setTrueCallButton();
-    } else {
+    } else if (
+      faces[0].leftEyePosition.x > 280 &&
+      faces[0].leftEyePosition.x < 430
+    ) {
       this.setTrueSmsButton();
+    } else {
+      this.setTrueMusicButton();
     }
 
     // console.log(
@@ -335,6 +378,19 @@ export default class CameraScreen extends React.Component {
               ]}
               onPress={this.sendSms.bind(this)}>
               <Text style={styles.flipText}> SMS </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                this.state.buttonsHover.musicButton
+                  ? styles.selectedButton
+                  : styles.flipButton,
+                this.state.buttonsHover.musicButton
+                  ? styles.selectedPicButton
+                  : styles.picButton,
+                {flex: 0.3, alignSelf: 'flex-end'},
+              ]}
+              onPress={this.openSpotify.bind(this)}>
+              <Text style={styles.flipText}> MUSIC </Text>
             </TouchableOpacity>
           </View>
         </View>
