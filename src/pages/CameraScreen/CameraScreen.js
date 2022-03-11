@@ -53,6 +53,7 @@ export default class CameraScreen extends React.Component {
       callButton: true,
       smsButton: false,
       musicButton: false,
+      videoButton: false,
     },
     canDetectBarcode: false,
     faces: [],
@@ -94,11 +95,11 @@ export default class CameraScreen extends React.Component {
   }
 
   takePicture = async function () {
-    if (this.camera) {
+    /* if (this.camera) {
       const data = await this.camera.takePictureAsync();
       console.warn('takePicture ', data);
       this.setState({blinkedimage: data.path});
-    }
+    }*/
   };
 
   /*manageButtonStates(type) {
@@ -124,6 +125,7 @@ export default class CameraScreen extends React.Component {
         callButton: false,
         smsButton: true,
         musicButton: false,
+        videoButton: false,
       },
     });
   }
@@ -134,6 +136,7 @@ export default class CameraScreen extends React.Component {
         callButton: true,
         smsButton: false,
         musicButton: false,
+        videoButton: false,
       },
     });
   }
@@ -144,22 +147,38 @@ export default class CameraScreen extends React.Component {
         callButton: false,
         smsButton: false,
         musicButton: true,
+        videoButton: false,
+      },
+    });
+  }
+
+  setTrueVideoButton() {
+    this.setState({
+      buttonsHover: {
+        callButton: false,
+        smsButton: false,
+        musicButton: false,
+        videoButton: true,
       },
     });
   }
 
   callAnyone = async function () {
-    callPhone('+905436083152');
+    //callPhone('+905436083152');
   };
 
   sendSms = async function () {
-    sendSMS(['+905436083152'], 'selam');
+    //sendSMS(['+905436083152'], 'selam');
   };
 
   openSpotify = async function () {
     Linking.openURL(
       'https://open.spotify.com/playlist/37i9dQZF1E4yMk2wN0k5C4?si=57ce9467c865431d',
     );
+  };
+
+  openYoutube = async function () {
+    Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
   };
 
   toggle = value => () => {
@@ -172,15 +191,20 @@ export default class CameraScreen extends React.Component {
     const leftEye = faces[0].leftEyeOpenProbability;
     const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
-    if (faces[0].leftEyePosition.x < 280) {
+    if (faces[0].leftEyePosition.x < 230) {
       this.setTrueCallButton();
     } else if (
-      faces[0].leftEyePosition.x > 280 &&
-      faces[0].leftEyePosition.x < 430
+      faces[0].leftEyePosition.x > 230 &&
+      faces[0].leftEyePosition.x < 340
     ) {
       this.setTrueSmsButton();
-    } else {
+    } else if (
+      faces[0].leftEyePosition.x > 340 &&
+      faces[0].leftEyePosition.x < 430
+    ) {
       this.setTrueMusicButton();
+    } else {
+      this.setTrueVideoButton();
     }
 
     // console.log(
@@ -202,8 +226,12 @@ export default class CameraScreen extends React.Component {
       this.setState({blinkDetected: true});
       if (this.state.buttonsHover.callButton) {
         this.callAnyone();
-      } else {
+      } else if (this.state.buttonsHover.smsButton) {
         this.sendSms();
+      } else if (this.state.buttonsHover.musicButton) {
+        this.openSpotify();
+      } else {
+        this.openYoutube();
       }
     }
     if (this.state.blinkDetected && bothEyes >= 0.9) {
@@ -361,7 +389,7 @@ export default class CameraScreen extends React.Component {
                 this.state.buttonsHover.callButton
                   ? styles.selectedPicButton
                   : styles.picButton,
-                {flex: 0.3, alignSelf: 'flex-end'},
+                {flex: 0.24, alignSelf: 'flex-end'},
               ]}
               onPress={this.callAnyone.bind(this)}>
               <Text style={styles.flipText}> CALL </Text>
@@ -374,7 +402,7 @@ export default class CameraScreen extends React.Component {
                 this.state.buttonsHover.smsButton
                   ? styles.selectedPicButton
                   : styles.picButton,
-                {flex: 0.3, alignSelf: 'flex-end'},
+                {flex: 0.24, alignSelf: 'flex-end'},
               ]}
               onPress={this.sendSms.bind(this)}>
               <Text style={styles.flipText}> SMS </Text>
@@ -387,10 +415,23 @@ export default class CameraScreen extends React.Component {
                 this.state.buttonsHover.musicButton
                   ? styles.selectedPicButton
                   : styles.picButton,
-                {flex: 0.3, alignSelf: 'flex-end'},
+                {flex: 0.24, alignSelf: 'flex-end'},
               ]}
               onPress={this.openSpotify.bind(this)}>
               <Text style={styles.flipText}> MUSIC </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                this.state.buttonsHover.videoButton
+                  ? styles.selectedButton
+                  : styles.flipButton,
+                this.state.buttonsHover.videoButton
+                  ? styles.selectedPicButton
+                  : styles.picButton,
+                {flex: 0.24, alignSelf: 'flex-end'},
+              ]}
+              onPress={this.openYoutube.bind(this)}>
+              <Text style={styles.flipText}> VIDEO </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -412,7 +453,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   flipButton: {
-    flex: 0.3,
+    flex: 0.2,
     height: 40,
     marginHorizontal: 2,
     marginBottom: 10,
@@ -425,7 +466,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selectedButton: {
-    flex: 0.3,
+    flex: 0.2,
     height: 40,
     marginHorizontal: 2,
     marginBottom: 10,
