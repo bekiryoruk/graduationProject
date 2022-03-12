@@ -1,1 +1,1 @@
-export {default} from './StackNavigator';
+export {default} from './TabNavigator';
