@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/voice": "^1.1.9",
-    "@react-navigation/bottom-tabs": "^5.11.11",
+    "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^5.14.5",
     "react": "17.0.1",
