@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
+import RNCalendarEvents from 'react-native-calendar-events';
 
 const flashModeOrder = {
   off: 'on',
@@ -169,6 +170,11 @@ export default class CameraScreen extends React.Component {
 
   sendSms = async function () {
     //sendSMS(['+905436083152'], 'selam');
+    /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
+    const mobile = '+905345242175';
+    let url =
+      'whatsapp://send?text=' + 'denem-whatsapp-message' + '&phone=' + mobile;
+    Linking.openURL(url);*/
   };
 
   openSpotify = async function () {
@@ -179,6 +185,16 @@ export default class CameraScreen extends React.Component {
 
   openYoutube = async function () {
     Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
+  };
+
+  setEventToCalender = async function () {
+    RNCalendarEvents.findCalendars();
+    RNCalendarEvents.saveEvent('Event Name', {
+      calendarId: '003',
+      startDate: '2022-03-15T13:42:00.000Z', // burada yazılan saatin 3 saat sonrasına etkinlik oluşturuyor.
+      endDate: '2022-03-15T14:39:00.000Z',
+      location: 'Izmir, Turkey',
+    });
   };
 
   toggle = value => () => {
@@ -229,7 +245,8 @@ export default class CameraScreen extends React.Component {
       } else if (this.state.buttonsHover.smsButton) {
         this.sendSms();
       } else if (this.state.buttonsHover.musicButton) {
-        this.openSpotify();
+        // this.openSpotify();
+        this.setEventToCalender();
       } else {
         this.openYoutube();
       }
@@ -455,6 +472,7 @@ const styles = StyleSheet.create({
   flipButton: {
     flex: 0.2,
     height: 40,
+    bottom: 60,
     marginHorizontal: 2,
     marginBottom: 10,
     marginTop: 10,
@@ -468,6 +486,7 @@ const styles = StyleSheet.create({
   selectedButton: {
     flex: 0.2,
     height: 40,
+    bottom: 60,
     marginHorizontal: 2,
     marginBottom: 10,
     marginTop: 10,
