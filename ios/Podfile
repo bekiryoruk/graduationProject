@@ -14,6 +14,8 @@ target 'AwesomeCamera' do
 
   pod 'react-native-immediate-phone-call', :path => '../node_modules/react-native-immediate-phone-call'
 
+  pod 'RNCalendarEvents', :path => '../node_modules/react-native-calendar-events'
+
   target 'AwesomeCameraTests' do
     inherit! :complete
     # Pods for testing
