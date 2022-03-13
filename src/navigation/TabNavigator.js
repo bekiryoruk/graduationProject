@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
-import Main from '../pages/Main';
 import CameraScreen from '../pages/CameraScreen';
 import Information from '../pages/Information';
 import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
+import StackNavigator from './StackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +14,7 @@ function TabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         showLabel: false,
+        keyboardHidesTabBar: false,
         style: {
           position: 'absolute',
           bottom: 0,
@@ -23,7 +23,7 @@ function TabNavigator() {
         }
       }}
     >
-      <Tab.Screen name="Home" component={Main} options= {{
+      <Tab.Screen name="Home" component={StackNavigator} options= {{
         tabBarIcon: ({focused}) => (
           <IconButton text={'Home'} src={require('../assets/navigation/home.png')} focused={focused}/>
         )
