@@ -20,8 +20,16 @@ const Main = () => {
         <View>
           <Text style={styles.sectionTitle}>Main page</Text>
           <Button
-            onPress={() => navigation.navigate('CreateContact', {})}
-            title="Create"
+            onPress={() => navigation.navigate('CreateItem', {componentName: 'contacts'})}
+            title="Create Contact"
+          />
+          <Button
+            onPress={() => navigation.navigate('CreateItem', {componentName: 'youtube'})}
+            title="Create Youtube Link"
+          />
+          <Button
+            onPress={() => navigation.navigate('CreateItem', {componentName: 'spotify'})}
+            title="Create Spotify Link"
           />
         </View>
       </ScrollView>
