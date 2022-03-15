@@ -1,12 +1,10 @@
 import * as React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Main from '../pages/Main';
 import CameraScreen from '../pages/CameraScreen';
-import Information from '../pages/Information';
 import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
+import StackNavigator from './StackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,7 +22,7 @@ function TabNavigator() {
       }}>
       <Tab.Screen
         name="Home"
-        component={Main}
+        component={StackNavigator}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
