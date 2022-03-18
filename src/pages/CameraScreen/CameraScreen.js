@@ -13,6 +13,8 @@ import {
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
 import RNCalendarEvents from 'react-native-calendar-events';
+import Voice from '@react-native-community/voice';
+import BackgroundService from 'react-native-background-actions';
 
 const flashModeOrder = {
   off: 'on',
@@ -33,6 +35,7 @@ const wbOrder = {
 const landmarkSize = 10;
 
 export default class CameraScreen extends React.Component {
+
   state = {
     flash: 'off',
     zoom: 0,
@@ -478,7 +481,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 8,
     borderColor: 'white',
-    borderWidth: 1,
+    color: 'white',
+    borderWidth: 2,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -491,8 +495,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 8,
-    borderColor: 'red',
-    borderWidth: 1,
+    borderColor: '#333',
+    color: 'white',
+    borderWidth: 2,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -506,10 +511,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     opacity: 0.4,
   },
-  flipText: {
-    color: 'white',
-    fontSize: 15,
-  },
   zoomText: {
     position: 'absolute',
     bottom: 70,
@@ -517,10 +518,10 @@ const styles = StyleSheet.create({
     left: 2,
   },
   picButton: {
-    backgroundColor: 'darkseagreen',
+    backgroundColor: 'white',
   },
   selectedPicButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#aaa',
   },
   facesContainer: {
     position: 'absolute',
