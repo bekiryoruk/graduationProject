@@ -13,25 +13,10 @@ import {
 import {RNCamera} from 'react-native-camera';
 import {callPhone, sendSMS} from '../../helpers';
 import RNCalendarEvents from 'react-native-calendar-events';
-
-const flashModeOrder = {
-  off: 'on',
-  on: 'auto',
-  auto: 'torch',
-  torch: 'off',
-};
-
-const wbOrder = {
-  auto: 'sunny',
-  sunny: 'cloudy',
-  cloudy: 'shadow',
-  shadow: 'fluorescent',
-  fluorescent: 'incandescent',
-  incandescent: 'auto',
-};
+import Voice from '@react-native-community/voice';
+import BackgroundService from 'react-native-background-actions';
 
 const landmarkSize = 10;
-
 export default class CameraScreen extends React.Component {
   state = {
     flash: 'off',
@@ -55,11 +40,118 @@ export default class CameraScreen extends React.Component {
       smsButton: false,
       musicButton: false,
       videoButton: false,
+      calenderButton: false,
     },
     canDetectBarcode: false,
     faces: [],
     blinkDetected: false,
     blinkedimage: null,
+    voiceResult: '',
+  };
+
+  sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
+
+  veryIntensiveTask = async taskDataArguments => {
+    // Example of an infinite loop task
+    const {delay} = taskDataArguments;
+    await new Promise(async resolve => {
+      for (let i = 0; BackgroundService.isRunning(); i++) {
+        console.log(this.state.voiceResult);
+        await this.sleep(delay);
+      }
+    });
+  };
+
+  options = {
+    taskName: 'Example',
+    taskTitle: 'Touchless',
+    taskDesc: 'Voice Recording',
+    taskIcon: {
+      name: 'ic_launcher',
+      type: 'mipmap',
+    },
+    color: '#ff00ff',
+    linkingURI: 'yourSchemeHere://chat/jane', // See Deep Linking for more info
+    parameters: {
+      delay: 2000,
+    },
+  };
+
+  backgroundServiceStart = async () => {
+    await BackgroundService.start(this.veryIntensiveTask, this.options);
+  };
+
+  /*b = async () => {
+    await BackgroundService.updateNotification({
+      taskDesc: 'Voice Recording',
+    });
+  };
+
+  c = async () => {
+    await BackgroundService.stop();
+  };*/
+  // TODO: bu kısım uyarı veriyor bu kısıma dönücem
+  componentWillMount = () => {
+    Voice.onSpeechStart = this.onSpeechStartHandler;
+    Voice.onSpeechEnd = this.onSpeechEndHandler;
+    Voice.onSpeechResults = this.onSpeechResultsHandler;
+    this.startRecording();
+    return () => {
+      Voice.destroy().then(Voice.removeAllListeners);
+    };
+  };
+
+  onSpeechStartHandler = e => {
+    console.log('start handler==>>>', e);
+    this.backgroundServiceStart();
+  };
+
+  onSpeechEndHandler = e => {
+    //  TODO: stop ihtiyacım olursa diye tutuyorum simdilik
+  };
+
+  onSpeechResultsHandler = e => {
+    let text = e.value[0];
+    this.setState({
+      voiceResult: text,
+    });
+    console.log('speech result handler', e);
+    console.log(text);
+    if (text.includes('call')) {
+      this.callAnyone();
+    } else if (text.includes('music') || text.includes('spotify')) {
+      this.openSpotify();
+    } else if (text.includes('youtube') || text.includes('video')) {
+      this.openYoutube();
+    } else if (text.includes('sms') || text.includes('message')) {
+      this.sendSms();
+    } else if (text.includes('calendar') || text.includes('save')) {
+      this.setEventToCalender();
+    } else if (
+      text.includes('turn') ||
+      text.includes('back') ||
+      text.includes('touchless')
+    ) {
+      // bu kısım geliştirilecek
+      this.turnBackToApp();
+    }
+    this.startRecording();
+  };
+
+  startRecording = async () => {
+    try {
+      await Voice.start('en-Us');
+    } catch (error) {
+      console.log('error raised', error);
+    }
+  };
+
+  stopRecording = async () => {
+    try {
+      // await Voice.stop();
+    } catch (error) {
+      console.log('error raised', error);
+    }
   };
 
   toggleFacing() {
@@ -127,6 +219,7 @@ export default class CameraScreen extends React.Component {
         smsButton: true,
         musicButton: false,
         videoButton: false,
+        calenderButton: false,
       },
     });
   }
@@ -138,6 +231,7 @@ export default class CameraScreen extends React.Component {
         smsButton: false,
         musicButton: false,
         videoButton: false,
+        calenderButton: false,
       },
     });
   }
@@ -149,6 +243,7 @@ export default class CameraScreen extends React.Component {
         smsButton: false,
         musicButton: true,
         videoButton: false,
+        calenderButton: false,
       },
     });
   }
@@ -160,16 +255,29 @@ export default class CameraScreen extends React.Component {
         smsButton: false,
         musicButton: false,
         videoButton: true,
+        calenderButton: false,
+      },
+    });
+  }
+
+  setTrueCalenderButton() {
+    this.setState({
+      buttonsHover: {
+        callButton: false,
+        smsButton: false,
+        musicButton: false,
+        videoButton: false,
+        calenderButton: true,
       },
     });
   }
 
   callAnyone = async function () {
-    //callPhone('+905436083152');
+    callPhone('+905436083152');
   };
 
   sendSms = async function () {
-    //sendSMS(['+905436083152'], 'selam');
+    sendSMS(['+905436083152'], 'selam');
     /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
     const mobile = '+905345242175';
     let url =
@@ -185,6 +293,11 @@ export default class CameraScreen extends React.Component {
 
   openYoutube = async function () {
     Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
+  };
+
+  turnBackToApp = async function () {
+    // TODO: bunu araştırıp app'e dönmesini sağlıycam
+    Linking.openURL('Touchless');
   };
 
   setEventToCalender = async function () {
@@ -207,18 +320,23 @@ export default class CameraScreen extends React.Component {
     const leftEye = faces[0].leftEyeOpenProbability;
     const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
-    if (faces[0].leftEyePosition.x < 230) {
+    if (faces[0].leftEyePosition.x < 200) {
       this.setTrueCallButton();
     } else if (
-      faces[0].leftEyePosition.x > 230 &&
-      faces[0].leftEyePosition.x < 340
+      faces[0].leftEyePosition.x > 200 &&
+      faces[0].leftEyePosition.x < 300
     ) {
       this.setTrueSmsButton();
     } else if (
-      faces[0].leftEyePosition.x > 340 &&
-      faces[0].leftEyePosition.x < 430
+      faces[0].leftEyePosition.x > 300 &&
+      faces[0].leftEyePosition.x < 390
     ) {
       this.setTrueMusicButton();
+    } else if (
+      faces[0].leftEyePosition.x > 390 &&
+      faces[0].leftEyePosition.x < 430
+    ) {
+      this.setTrueCalenderButton();
     } else {
       this.setTrueVideoButton();
     }
@@ -245,7 +363,8 @@ export default class CameraScreen extends React.Component {
       } else if (this.state.buttonsHover.smsButton) {
         this.sendSms();
       } else if (this.state.buttonsHover.musicButton) {
-        // this.openSpotify();
+        this.openSpotify();
+      } else if (this.state.buttonsHover.calenderButton) {
         this.setEventToCalender();
       } else {
         this.openYoutube();
@@ -450,6 +569,19 @@ export default class CameraScreen extends React.Component {
               onPress={this.openYoutube.bind(this)}>
               <Text style={styles.flipText}> VIDEO </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                this.state.buttonsHover.calenderButton
+                  ? styles.selectedButton
+                  : styles.flipButton,
+                this.state.buttonsHover.calenderButton
+                  ? styles.selectedPicButton
+                  : styles.picButton,
+                {flex: 0.24, alignSelf: 'flex-end'},
+              ]}
+              onPress={this.setEventToCalender.bind(this)}>
+              <Text style={styles.flipText}> CALENDAR </Text>
+            </TouchableOpacity>
           </View>
         </View>
         {this.renderFaces()}
@@ -478,7 +610,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 8,
     borderColor: 'white',
-    borderWidth: 1,
+    color: 'white',
+    borderWidth: 2,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -491,8 +624,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 8,
-    borderColor: 'red',
-    borderWidth: 1,
+    borderColor: '#333',
+    color: 'white',
+    borderWidth: 2,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -506,10 +640,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     opacity: 0.4,
   },
-  flipText: {
-    color: 'white',
-    fontSize: 15,
-  },
   zoomText: {
     position: 'absolute',
     bottom: 70,
@@ -517,10 +647,10 @@ const styles = StyleSheet.create({
     left: 2,
   },
   picButton: {
-    backgroundColor: 'darkseagreen',
+    backgroundColor: 'white',
   },
   selectedPicButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#aaa',
   },
   facesContainer: {
     position: 'absolute',
