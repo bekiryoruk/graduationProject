@@ -1,25 +1,22 @@
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Text,
-  View,
-  TextInput,
-  Button,
-} from 'react-native';
-import { storeItem, getItem } from '../../../helpers';
+import {SafeAreaView, Text, Button, Alert} from 'react-native';
+import CustomTextInput from '../../../components/CustomTextInput/CustomTextInput';
+import {storeItem, getItem} from '../../../helpers';
 
 import styles from './CreateItem.styles';
 
-const CreateItem = ({ route }) => {
+const CreateItem = ({route}) => {
   const {componentName} = route.params;
-  const [firstItem, setFirstItem] = useState("");
-  const [secondItem, setSecondItem] = useState("");
+  const [firstItem, setFirstItem] = useState('');
+  const [secondItem, setSecondItem] = useState('');
 
   const storeNewItem = () => {
-    getItem(componentName).then((items) => {
-      if(items) {
+    if (firstItem.length === 0 || secondItem.length === 0) {
+      Alert.alert('Please enter valid input!');
+      return;
+    }
+    getItem(componentName).then(items => {
+      if (items) {
         const newItems = [...items, {name: firstItem, param: secondItem}];
         storeItem(newItems, componentName);
         console.log(newItems);
@@ -29,33 +26,25 @@ const CreateItem = ({ route }) => {
         console.log(newItems);
       }
     });
-  }
+  };
 
   return (
     <SafeAreaView>
-      <StatusBar backgroundColor="black" />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-       <View>
-          <Text style={styles.sectionTitle}>Create {componentName}</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setFirstItem}
-            value={firstItem}
-            placeholder="Name"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={setSecondItem}
-            value={secondItem}
-            placeholder={componentName === 'contacts' ? 'Number' : componentName + " Link"}
-            keyboardType={componentName === 'contacts' ? 'numeric' : 'url'}
-          />
-          <Button
-            onPress={() => storeNewItem()}
-            title="Save"
-          />
-        </View>
-      </ScrollView>
+      <Text style={styles.sectionTitle}>Create {componentName}</Text>
+      <CustomTextInput
+        onChange={e => setFirstItem(e)}
+        value={firstItem}
+        placeholder={'Name'}
+      />
+      <CustomTextInput
+        onChange={e => setSecondItem(e)}
+        value={secondItem}
+        placeholder={
+          componentName === 'contacts' ? 'Number' : componentName + ' Link'
+        }
+        keyboardType={componentName === 'contacts' ? 'numeric' : 'url'}
+      />
+      <Button onPress={storeNewItem} title="Save" />
     </SafeAreaView>
   );
 };
