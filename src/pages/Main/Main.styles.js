@@ -6,6 +6,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'black',
   },
+  container: {
+    flex: 1,
+  },
+  titleText: {
+    flex: 1,
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
 });
 
 export default styles;

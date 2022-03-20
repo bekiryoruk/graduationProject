@@ -5,8 +5,9 @@ import {storeItem, getItem} from '../../../helpers';
 
 import styles from './CreateItem.styles';
 
-const CreateItem = ({route}) => {
-  const {componentName} = route.params;
+
+const CreateItem = () => {
+  const [type, setType] = useState('');
   const [firstItem, setFirstItem] = useState('');
   const [secondItem, setSecondItem] = useState('');
 
@@ -15,14 +16,14 @@ const CreateItem = ({route}) => {
       Alert.alert('Please enter valid input!');
       return;
     }
-    getItem(componentName).then(items => {
+    getItem(type).then(items => {
       if (items) {
         const newItems = [...items, {name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
+        storeItem(newItems, type);
         console.log(newItems);
       } else {
         const newItems = [{name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
+        storeItem(newItems, type);
         console.log(newItems);
       }
     });
@@ -30,7 +31,7 @@ const CreateItem = ({route}) => {
 
   return (
     <SafeAreaView>
-      <Text style={styles.sectionTitle}>Create {componentName}</Text>
+      <Text style={styles.sectionTitle}>Create Item</Text>
       <CustomTextInput
         onChange={e => setFirstItem(e)}
         value={firstItem}
@@ -39,10 +40,8 @@ const CreateItem = ({route}) => {
       <CustomTextInput
         onChange={e => setSecondItem(e)}
         value={secondItem}
-        placeholder={
-          componentName === 'contacts' ? 'Number' : componentName + ' Link'
-        }
-        keyboardType={componentName === 'contacts' ? 'numeric' : 'url'}
+        placeholder={type === 'contacts' ? 'Number' : type + ' Link'}
+        keyboardType={type === 'contacts' ? 'numeric' : 'url'}
       />
       <Button onPress={storeNewItem} title="Save" />
     </SafeAreaView>
