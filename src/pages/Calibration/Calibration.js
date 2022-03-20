@@ -1,5 +1,5 @@
 import React from 'react';
-import ActionButton from '../../components/ActionButton';
+import { ActionButton } from '../../components';
 import { Alert } from "react-native";
 
 const Calibration = () => {

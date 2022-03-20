@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CameraScreen from '../pages/CameraScreen';
 import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
-import StackNavigator from './StackNavigator';
+import Main from '../pages/Main';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +22,7 @@ function TabNavigator() {
       }}>
       <Tab.Screen
         name="Home"
-        component={StackNavigator}
+        component={Main}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton

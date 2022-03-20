@@ -1,61 +1,67 @@
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Text,
-  View,
-  TextInput,
-  Button,
-} from 'react-native';
-import { storeItem, getItem } from '../../../helpers';
+import {SafeAreaView, Text, Button, Alert} from 'react-native';
+import CustomTextInput from '../../../components/CustomTextInput/CustomTextInput';
+import {storeItem, getItem} from '../../../helpers';
+import SelectDropdown from 'react-native-select-dropdown';
 
 import styles from './CreateItem.styles';
 
-const CreateItem = ({ route }) => {
-  const {componentName} = route.params;
-  const [firstItem, setFirstItem] = useState("");
-  const [secondItem, setSecondItem] = useState("");
+const CreateItem = ({callBack, reload}) => {
+  const [type, setType] = useState('');
+  const [firstItem, setFirstItem] = useState('');
+  const [secondItem, setSecondItem] = useState('');
+  const types = ['contacts', 'youtube', 'spotify'];
 
   const storeNewItem = () => {
-    getItem(componentName).then((items) => {
-      if(items) {
+    if (firstItem.length === 0 || secondItem.length === 0) {
+      Alert.alert('Please enter valid input!');
+      return;
+    }
+    getItem(type).then(items => {
+      if (items) {
         const newItems = [...items, {name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
+        storeItem(newItems, type);
         console.log(newItems);
       } else {
         const newItems = [{name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
+        storeItem(newItems, type);
         console.log(newItems);
       }
     });
-  }
+    callBack(reload + 1);
+  };
 
   return (
     <SafeAreaView>
-      <StatusBar backgroundColor="black" />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-       <View>
-          <Text style={styles.sectionTitle}>Create {componentName}</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setFirstItem}
-            value={firstItem}
-            placeholder="Name"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={setSecondItem}
-            value={secondItem}
-            placeholder={componentName === 'contacts' ? 'Number' : componentName + " Link"}
-            keyboardType={componentName === 'contacts' ? 'numeric' : 'url'}
-          />
-          <Button
-            onPress={() => storeNewItem()}
-            title="Save"
-          />
-        </View>
-      </ScrollView>
+      <Text style={styles.sectionTitle}>Create Item</Text>
+      <SelectDropdown
+        data={types}
+        onSelect={selectedItem => {
+          setType(selectedItem);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+      />
+      <CustomTextInput
+        onChange={e => setFirstItem(e)}
+        value={firstItem}
+        placeholder={'Name'}
+      />
+      <CustomTextInput
+        onChange={e => setSecondItem(e)}
+        value={secondItem}
+        placeholder={type === 'contacts' ? 'Number' : type + ' Link'}
+        keyboardType={type === 'contacts' ? 'numeric' : 'url'}
+      />
+      <Button onPress={storeNewItem} title="Save" />
     </SafeAreaView>
   );
 };

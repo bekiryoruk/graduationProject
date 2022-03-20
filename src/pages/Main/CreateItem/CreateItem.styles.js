@@ -6,12 +6,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'black',
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
 });
 
 export default styles;
