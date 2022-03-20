@@ -31,7 +31,9 @@ const ExpandableComponent = ({item, onClickFunction}) => {
           <TouchableOpacity
             key={key}
             style={styles.content}
-            onPress={() => alert('Name: ' + item.name + ' val: ' + item.val)}>
+            onPress={() =>
+              alert('Name: ' + item.name + ' param: ' + item.param)
+            }>
             <Text style={styles.text}>
               {key + 1}. {item.name}
             </Text>

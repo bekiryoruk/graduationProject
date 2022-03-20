@@ -6,7 +6,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 
 import styles from './CreateItem.styles';
 
-const CreateItem = () => {
+const CreateItem = ({callBack, reload}) => {
   const [type, setType] = useState('');
   const [firstItem, setFirstItem] = useState('');
   const [secondItem, setSecondItem] = useState('');
@@ -28,6 +28,7 @@ const CreateItem = () => {
         console.log(newItems);
       }
     });
+    callBack(reload + 1);
   };
 
   return (
