@@ -21,17 +21,17 @@ const Main = () => {
   const [listDataSource, setListDataSource] = useState([
     {
       isExpanded: false,
-      category_name: 'contacts',
+      category_name: 'Contacts',
       subcategory: [],
     },
     {
       isExpanded: false,
-      category_name: 'youtube',
+      category_name: 'Videos',
       subcategory: [],
     },
     {
       isExpanded: false,
-      category_name: 'spotify',
+      category_name: 'Musics',
       subcategory: [],
     },
   ]);
@@ -49,11 +49,11 @@ const Main = () => {
 
   useEffect(() => {
     if (listDataSource[0].subcategory.length === 0) {
-      getItem('contacts').then(data => {
+      getItem('Contacts').then(data => {
         if (data && data.length > 0) {
-          console.log('contacts: ', data);
+          console.log('Contacts: ', data);
           const newArray = listDataSource.map(item =>
-            item.category_name === 'contacts'
+            item.category_name === 'Contacts'
               ? {...item, subcategory: data}
               : item,
           );
@@ -63,11 +63,11 @@ const Main = () => {
       });
     }
     if (listDataSource[1].subcategory.length === 0) {
-      getItem('youtube').then(data => {
+      getItem('Videos').then(data => {
         if (data && data.length > 0) {
-          console.log('youtube: ', data);
+          console.log('Videos: ', data);
           const newArray = listDataSource.map(item =>
-            item.category_name === 'youtube'
+            item.category_name === 'Videos'
               ? {...item, subcategory: data}
               : item,
           );
@@ -77,11 +77,11 @@ const Main = () => {
       });
     }
     if (listDataSource[2].subcategory.length === 0) {
-      getItem('spotify').then(data => {
+      getItem('Musics').then(data => {
         if (data && data.length > 0) {
-          console.log('spotify: ', data);
+          console.log('Musics: ', data);
           const newArray = listDataSource.map(item =>
-            item.category_name === 'spotify'
+            item.category_name === 'Musics'
               ? {...item, subcategory: data}
               : item,
           );
@@ -97,10 +97,12 @@ const Main = () => {
   }, [reload]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={styles.container}>
         <View style={{flexDirection: 'row', padding: 10}}>
-          <Text style={styles.titleText}>Main Page</Text>
+          <Text style={styles.titleText}>
+            Click for showing registered information.
+          </Text>
         </View>
         <ScrollView>
           {listDataSource.map((item, key) => (
@@ -120,4 +122,3 @@ const Main = () => {
 };
 
 export default Main;
-

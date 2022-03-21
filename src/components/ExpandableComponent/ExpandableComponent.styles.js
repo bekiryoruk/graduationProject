@@ -2,12 +2,15 @@ import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#F5FCFF',
-    padding: 20,
+    backgroundColor: 'white',
+    padding: 10,
+    flexDirection: 'row',
   },
   headerText: {
-    fontSize: 16,
-    fontWeight: '500',
+    flex: 1,
+    fontSize: 24,
+    fontWeight: '600',
+    marginLeft: 10,
   },
   separator: {
     height: 0.5,
@@ -25,6 +28,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     backgroundColor: '#fff',
+  },
+  icon: {
+    marginTop: 5,
+    marginLeft: 10,
   },
 });
 

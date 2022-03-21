@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {SafeAreaView, Text, Button, Alert} from 'react-native';
+import {SafeAreaView, Text, TouchableOpacity, Alert} from 'react-native';
 import CustomTextInput from '../../../components/CustomTextInput/CustomTextInput';
 import {storeItem, getItem} from '../../../helpers';
 import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import styles from './CreateItem.styles';
 
@@ -10,7 +11,7 @@ const CreateItem = ({callBack, reload}) => {
   const [type, setType] = useState('');
   const [firstItem, setFirstItem] = useState('');
   const [secondItem, setSecondItem] = useState('');
-  const types = ['contacts', 'youtube', 'spotify'];
+  const types = ['Contact', 'Youtube', 'Spotify'];
 
   const storeNewItem = () => {
     if (firstItem.length === 0 || secondItem.length === 0) {
@@ -32,10 +33,17 @@ const CreateItem = ({callBack, reload}) => {
   };
 
   return (
-    <SafeAreaView>
-      <Text style={styles.sectionTitle}>Create Item</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.sectionTitle}> INSERT NEW INFORMATION</Text>
       <SelectDropdown
         data={types}
+        buttonStyle={styles.picker}
+        defaultButtonText={'Select type of information'}
+        buttonTextStyle={styles.pickertext}
+        dropdownIconPosition={'right'}
+        renderDropdownIcon={item => {
+          return <FontAwesome name={'chevron-down'} color={'#fff'} size={24} />;
+        }}
         onSelect={selectedItem => {
           setType(selectedItem);
         }}
@@ -58,10 +66,12 @@ const CreateItem = ({callBack, reload}) => {
       <CustomTextInput
         onChange={e => setSecondItem(e)}
         value={secondItem}
-        placeholder={type === 'contacts' ? 'Number' : type + ' Link'}
-        keyboardType={type === 'contacts' ? 'numeric' : 'url'}
+        placeholder={type === 'Contact' ? 'Number' : type + ' Link'}
+        keyboardType={type === 'Contact' ? 'numeric' : 'url'}
       />
-      <Button onPress={storeNewItem} title="Save" />
+      <TouchableOpacity style={styles.savebutton} onPress={storeNewItem}>
+        <Text style={styles.text}> SAVE </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
