@@ -11,7 +11,7 @@ import {
   Linking,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
-import {callPhone, sendSMS} from '../../helpers';
+import {callPhone, getItem, sendSMS} from '../../helpers';
 import RNCalendarEvents from 'react-native-calendar-events';
 import Voice from '@react-native-community/voice';
 import BackgroundService from 'react-native-background-actions';
@@ -47,6 +47,11 @@ export default class CameraScreen extends React.Component {
     blinkDetected: false,
     blinkedimage: null,
     voiceResult: '',
+    actionType: '',
+    contacts: null,
+    youtube: null,
+    spotify: null,
+    listItems: null,
   };
 
   sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
@@ -91,11 +96,24 @@ export default class CameraScreen extends React.Component {
     await BackgroundService.stop();
   };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
+  componentDidMount() {
+    getItem('contacts').then(data => {
+      this.setState({contacts: data});
+    });
+    getItem('youtube').then(data => {
+      this.setState({youtube: data});
+    });
+    getItem('spotify').then(data => {
+      this.setState({spotify: data});
+    });
+  }
+
   componentWillMount = () => {
     Voice.onSpeechStart = this.onSpeechStartHandler;
     Voice.onSpeechEnd = this.onSpeechEndHandler;
     Voice.onSpeechResults = this.onSpeechResultsHandler;
     this.startRecording();
+
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
@@ -221,6 +239,8 @@ export default class CameraScreen extends React.Component {
         videoButton: false,
         calenderButton: false,
       },
+      listItems: this.state.contacts,
+      actionType: 'sms',
     });
   }
 
@@ -233,6 +253,8 @@ export default class CameraScreen extends React.Component {
         videoButton: false,
         calenderButton: false,
       },
+      listItems: this.state.contacts,
+      actionType: 'call',
     });
   }
 
@@ -245,6 +267,8 @@ export default class CameraScreen extends React.Component {
         videoButton: false,
         calenderButton: false,
       },
+      listItems: this.state.spotify,
+      actionType: 'spotify',
     });
   }
 
@@ -257,6 +281,8 @@ export default class CameraScreen extends React.Component {
         videoButton: true,
         calenderButton: false,
       },
+      listItems: this.state.youtube,
+      actionType: 'youtube',
     });
   }
 
@@ -272,12 +298,33 @@ export default class CameraScreen extends React.Component {
     });
   }
 
-  callAnyone = async function () {
-    callPhone('+905436083152');
+  actionMaker = async function (type, param) {
+    switch (type) {
+      case 'sms':
+        this.sendSms(param);
+        return;
+      case 'call':
+        this.callAnyone(param);
+        return;
+      case 'youtube':
+        this.openYoutube(param);
+        return;
+      case 'spotify':
+        this.openSpotify(param);
+        return;
+      default:
+        return;
+    }
   };
 
-  sendSms = async function () {
-    sendSMS(['+905436083152'], 'selam');
+  callAnyone = async function (param) {
+    console.log('Call phone', param);
+    // callPhone('+905436083152');
+  };
+
+  sendSms = async function (param) {
+    console.log('Send sms', param);
+    // sendSMS(['+905436083152'], 'selam');
     /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
     const mobile = '+905345242175';
     let url =
@@ -285,14 +332,16 @@ export default class CameraScreen extends React.Component {
     Linking.openURL(url);*/
   };
 
-  openSpotify = async function () {
-    Linking.openURL(
+  openSpotify = async function (param) {
+    console.log('Open spotify', param);
+    /* Linking.openURL(
       'https://open.spotify.com/playlist/37i9dQZF1E4yMk2wN0k5C4?si=57ce9467c865431d',
-    );
+    ); */
   };
 
-  openYoutube = async function () {
-    Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
+  openYoutube = async function (param) {
+    console.log('Open youtube', param);
+    // Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
   };
 
   turnBackToApp = async function () {
@@ -301,13 +350,15 @@ export default class CameraScreen extends React.Component {
   };
 
   setEventToCalender = async function () {
+    console.log('Call phone');
+    /*
     RNCalendarEvents.findCalendars();
     RNCalendarEvents.saveEvent('Event Name', {
       calendarId: '003',
       startDate: '2022-03-15T13:42:00.000Z', // burada yazılan saatin 3 saat sonrasına etkinlik oluşturuyor.
       endDate: '2022-03-15T14:39:00.000Z',
       location: 'Izmir, Turkey',
-    });
+    }); */
   };
 
   toggle = value => () => {
@@ -320,6 +371,7 @@ export default class CameraScreen extends React.Component {
     const leftEye = faces[0].leftEyeOpenProbability;
     const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
+    console.log(faces[0].leftEyePosition.y);
     if (faces[0].leftEyePosition.x < 200) {
       this.setTrueCallButton();
     } else if (
@@ -508,12 +560,52 @@ export default class CameraScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={{bottom: 0}}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            bottom: 0,
+          }}>
+          <View
+            style={{
+              width: 200,
+              height: 300,
+              marginBottom: 10,
+              marginTop: 10,
+              borderRadius: 8,
+              borderColor: '#333',
+              backgroundColor: 'transparent',
+              color: 'white',
+              borderWidth: 2,
+              padding: 5,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {this.state.listItems?.map((item, key) => {
+              return (
+                <TouchableOpacity
+                  key={key}
+                  style={[
+                    this.state.buttonsHover.callButton
+                      ? styles.selectedButton
+                      : styles.flipButton,
+                    this.state.buttonsHover.callButton
+                      ? styles.selectedPicButton
+                      : styles.picButton,
+                    {flex: 0.24, alignSelf: 'flex-end'},
+                  ]}
+                  onPress={this.actionMaker(this.state.actionType, item.param)}>
+                  <Text style={styles.flipText}> {item.name} </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
           <View
             style={{
               height: 56,
               backgroundColor: 'transparent',
+              marginTop: 50,
               flexDirection: 'row',
               alignSelf: 'flex-end',
             }}>
