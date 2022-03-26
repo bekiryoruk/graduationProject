@@ -7,6 +7,7 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Button,
 } from 'react-native';
 
 import {ExpandableComponent} from '../../components';
@@ -16,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './Main.styles';
 
-const Main = () => {
+const Main = ({navigation}) => {
   const [reload, setReload] = useState(0);
   const [listDataSource, setListDataSource] = useState([
     {
@@ -102,6 +103,10 @@ const Main = () => {
         <View style={{flexDirection: 'row', padding: 10}}>
           <Text style={styles.titleText}>Main Page</Text>
         </View>
+        <Button
+          onPress={() => navigation.navigate('WelcomeModal')}
+          title="Open Modal"
+        />
         <ScrollView>
           {listDataSource.map((item, key) => (
             <ExpandableComponent
