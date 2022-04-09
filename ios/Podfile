@@ -20,6 +20,8 @@ target 'AwesomeCamera' do
   pod 'RNCalendarEvents', :path => '../node_modules/react-native-calendar-events'
 
 
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'AwesomeCameraTests' do
     inherit! :complete
     # Pods for testing
