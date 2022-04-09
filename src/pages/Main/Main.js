@@ -7,6 +7,7 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Button,
 } from 'react-native';
 
 import {ExpandableComponent} from '../../components';
@@ -16,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './Main.styles';
 
-const Main = () => {
+const Main = ({navigation}) => {
   const [reload, setReload] = useState(0);
   const [listDataSource, setListDataSource] = useState([
     {
@@ -96,6 +97,14 @@ const Main = () => {
     console.log('reload: ', String(reload));
   }, [reload]);
 
+  useEffect(() => {
+    getItem('userType').then(data => {
+      if (!data) {
+        navigation.navigate('WelcomeModal');
+      }
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={styles.container}>
@@ -104,6 +113,10 @@ const Main = () => {
             Click for showing registered information.
           </Text>
         </View>
+        <Button
+          onPress={() => navigation.navigate('WelcomeModal')}
+          title="Open Modal"
+        />
         <ScrollView>
           {listDataSource.map((item, key) => (
             <ExpandableComponent

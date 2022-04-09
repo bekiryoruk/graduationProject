@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CameraScreen from '../pages/CameraScreen';
 import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
 import Main from '../pages/Main';
+import {Welcome, SecondModal} from '../pages/Modals';
 
 const Tab = createBottomTabNavigator();
 
@@ -57,6 +58,22 @@ function TabNavigator() {
               focused={focused}
             />
           ),
+        }}
+      />
+      <Tab.Screen
+        name="WelcomeModal"
+        component={Welcome}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="SecondModal"
+        component={SecondModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
         }}
       />
     </Tab.Navigator>
