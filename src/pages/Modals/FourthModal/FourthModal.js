@@ -2,46 +2,41 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, Button, Image} from 'react-native';
 import {CustomTextInput} from '../../../components';
 import {getItem} from '../../../helpers';
-import styles from './ThirdModal.styles';
-const ThirdModal = ({navigation}) => {
-  const [contactName, setContactName] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
+import styles from './FourthModal.styles';
+const FourthModal = ({navigation}) => {
+  const [videoName, setVideoName] = useState('');
+  const [videoLink, setVideoLink] = useState('');
 
   const goToNextStep = type => {
-    navigation.navigate('FourthModal');
+    navigation.navigate('FifthModal');
   };
 
   const goToBackStep = type => {
-    navigation.navigate('SecondModal');
+    navigation.navigate('ThirdModal');
   };
 
   useEffect(() => {
-    const userType = getItem('userType').then(data => {
-      console.log(data);
-    });
+    const userType = getItem('userType').then(data => {});
   }, []);
 
-  /*return (
-  <Button onPress={() => navigation.navigate('Home')} title="Start" />
-  );*/
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/contact.png')} />
-      <Text style={styles.title}>Insert your first contact person</Text>
+      <Image source={require('../assets/video.png')} />
+      <Text style={styles.title}>Insert your youtube video link</Text>
       <View style={styles.optionList}></View>
       <CustomTextInput
-        onChange={e => setContactName(e)}
-        value={contactName}
-        placeholder={'Enter your contact name'}
+        onChange={e => setVideoName(e)}
+        value={videoName}
+        placeholder={'Enter your video name'}
       />
       <CustomTextInput
-        onChange={e => setContactNumber(e)}
-        value={contactNumber}
-        placeholder={'Enter your contact name'}
+        onChange={e => setVideoLink(e)}
+        value={videoLink}
+        placeholder={'Enter your video link'}
       />
       <Image
         style={styles.circles}
-        source={require('../assets/third-circle.png')}
+        source={require('../assets/fourth-circle.png')}
       />
       <View style={styles.buttons}>
         <View style={styles.nextButton}>
@@ -63,4 +58,4 @@ const ThirdModal = ({navigation}) => {
   );
 };
 
-export default ThirdModal;
+export default FourthModal;

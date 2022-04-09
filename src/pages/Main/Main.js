@@ -100,7 +100,7 @@ const Main = ({navigation}) => {
   useEffect(() => {
     getItem('userType').then(data => {
       if (!data) {
-        navigation.navigate('WelcomeModal');
+        navigation.navigate('SecondModal');
       }
     });
   }, []);

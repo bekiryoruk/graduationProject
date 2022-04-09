@@ -5,7 +5,13 @@ import CameraScreen from '../pages/CameraScreen';
 import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
 import Main from '../pages/Main';
-import {Welcome, SecondModal, ThirdModal} from '../pages/Modals';
+import {
+  Welcome,
+  SecondModal,
+  ThirdModal,
+  FourthModal,
+  FifthModal,
+} from '../pages/Modals';
 
 const Tab = createBottomTabNavigator();
 
@@ -79,6 +85,22 @@ function TabNavigator() {
       <Tab.Screen
         name="ThirdModal"
         component={ThirdModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="FourthModal"
+        component={FourthModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="FifthModal"
+        component={FifthModal}
         options={{
           tabBarButton: () => null,
           tabBarVisible: false, //hide tab bar on this screen
