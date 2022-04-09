@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 
 import styles from './ExpandableComponent.styles';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const ExpandableComponent = ({item, onClickFunction}) => {
   const [layoutHeight, setLayoutHeight] = useState(0);
@@ -20,6 +21,18 @@ const ExpandableComponent = ({item, onClickFunction}) => {
         activeOpacity={0.8}
         onPress={onClickFunction}
         style={styles.header}>
+        <FontAwesome
+          style={styles.icon}
+          name={
+            item.category_name === 'Contacts'
+              ? 'address-book'
+              : item.category_name === 'Videos'
+              ? 'play'
+              : 'music'
+          }
+          color={'#333'}
+          size={20}
+        />
         <Text style={styles.headerText}>{item.category_name}</Text>
       </TouchableOpacity>
       <View
