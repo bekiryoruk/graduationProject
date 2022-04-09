@@ -1,26 +1,44 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, Button} from 'react-native';
-import {CustomTextInput} from '../../../components';
-import {getItem} from '../../../helpers';
+import React from 'react';
+import {View, Text, Image, Button} from 'react-native';
+
+import styles from './SecondModal.styles';
 
 const SecondModal = ({navigation}) => {
-  const [firstItem, setFirstItem] = useState('');
+  const goToNextStep = type => {
+    navigation.navigate('ThirdModal');
+  };
 
-  useEffect(() => {
-    const userType = getItem('userType').then(data => {
-      console.log(data);
-    });
-  }, []);
+  const goToBackStep = type => {
+    navigation.navigate('WelcomeModal');
+  };
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{fontSize: 30}}>This is a modal!</Text>
-      <Button onPress={() => navigation.navigate('Home')} title="Start" />
-      <CustomTextInput
-        onChange={e => setFirstItem(e)}
-        value={firstItem}
-        placeholder={'Name'}
+    <View style={styles.container}>
+      <Image source={require('../assets/disable.png')} />
+      <Text style={styles.title}>Select your disabled type</Text>
+      <Text style={styles.sectionTitle}>
+        Quickly complete the onboarding steps to start using the Touchless.
+      </Text>
+      <Image
+        style={styles.circles}
+        source={require('../assets/second-circle.png')}
       />
+      <View style={styles.buttons}>
+        <View style={styles.nextButton}>
+          <Button
+            color={'black'}
+            onPress={() => goToBackStep()}
+            title={'BACK'}
+          />
+        </View>
+        <View style={styles.nextButton}>
+          <Button
+            color={'black'}
+            onPress={() => goToNextStep()}
+            title={'NEXT'}
+          />
+        </View>
+      </View>
     </View>
   );
 };
