@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CameraScreen from '../pages/CameraScreen';
 import Calibration from '../pages/Calibration';

@@ -97,6 +97,14 @@ const Main = ({navigation}) => {
     console.log('reload: ', String(reload));
   }, [reload]);
 
+  useEffect(() => {
+    getItem('userType').then(data => {
+      if (!data) {
+        navigation.navigate('WelcomeModal');
+      }
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
