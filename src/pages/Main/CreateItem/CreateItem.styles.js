@@ -4,7 +4,8 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#E5E5E5',
+    height: '100%',
   },
   sectionTitle: {
     fontSize: 26,

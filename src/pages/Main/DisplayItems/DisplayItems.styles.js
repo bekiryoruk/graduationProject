@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     backgroundColor: '#E5E5E5',
+    height: '100%',
   },
   sectionTitle: {
     fontSize: 26,
