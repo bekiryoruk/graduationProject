@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    backgroundColor: '#E5E5E5',
+    backgroundColor: '#EEEEEE',
     height: '100%',
   },
   sectionTitle: {
@@ -14,20 +14,38 @@ const styles = StyleSheet.create({
     margin: 'auto',
     fontWeight: '600',
     color: 'black',
+    paddingTop: 6,
   },
   scroll: {
     width: '100%',
   },
-  itemCard: {
+  wholeContent: {
     padding: 20,
+  },
+  itemCard: {
+    marginBottom: 10,
   },
   itemCardTitle: {
     fontSize: 20,
+    paddingBottom: 8,
+  },
+  itemCardTextContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingLeft: 15,
+    paddingBottom: 20,
+    paddingTop: 20,
+    marginBottom: 7,
+    marginTop: 7,
+    borderRadius: 10,
+  },
+  itemCardText: {
+    fontSize: 18,
+    color: '#8B8B8B',
   },
   savebutton: {
     marginBottom: 50,
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   buttonText: {

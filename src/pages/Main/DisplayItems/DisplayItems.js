@@ -34,7 +34,7 @@ const DisplayItems = ({route, navigation}) => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.sectionTitle}>{componentName} settings</Text>
       <ScrollView style={styles.scroll}>
-        <View>
+        <View style={styles.wholeContent}>
           {data &&
             data.map((item, index) => {
               return (
@@ -51,20 +51,24 @@ const DisplayItems = ({route, navigation}) => {
                     <Text style={styles.itemCardTitle}>
                       {componentName} {index + 1}
                     </Text>
-                    <Text>{item.name}</Text>
-                    <Text>{item.param}</Text>
+                    <View style={styles.itemCardTextContainer}>
+                      <Text style={styles.itemCardText}>{item.name}</Text>
+                    </View>
+                    <View style={styles.itemCardTextContainer}>
+                      <Text style={styles.itemCardText}>{item.param}</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               );
             })}
+          <TouchableOpacity
+            style={styles.savebutton}
+            onPress={() =>
+              navigation.navigate('CreateItem', {componentName: componentName})
+            }>
+            <Text style={styles.buttonText}> INSERT NEW </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.savebutton}
-          onPress={() =>
-            navigation.navigate('CreateItem', {componentName: componentName})
-          }>
-          <Text style={styles.buttonText}> INSERT NEW </Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
