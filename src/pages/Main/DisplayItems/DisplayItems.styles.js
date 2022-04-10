@@ -5,14 +5,26 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    backgroundColor: '#E5E5E5',
   },
   sectionTitle: {
     fontSize: 26,
     margin: 'auto',
-    fontWeight: '700',
+    fontWeight: '600',
     color: 'black',
   },
+  scroll: {
+    width: '100%',
+  },
+  itemCard: {
+    padding: 20,
+  },
+  itemCardTitle: {
+    fontSize: 20,
+  },
   savebutton: {
+    marginBottom: 50,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

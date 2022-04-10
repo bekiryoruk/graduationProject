@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView, Text, TouchableOpacity, Alert, View} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+
 import CustomTextInput from '../../../components/CustomTextInput/CustomTextInput';
 import {storeItem, getItem} from '../../../helpers';
-
 import styles from './CreateItem.styles';
 
-const CreateItem = ({route}) => {
-  const {componentName} = route.params;
+const CreateItem = ({route, navigation}) => {
+  const {componentName, name, param} = route.params;
   const [firstItem, setFirstItem] = useState('');
   const [secondItem, setSecondItem] = useState('');
+  const isFocused = useIsFocused();
 
   const storeNewItem = () => {
     if (firstItem.length === 0 || secondItem.length === 0) {
@@ -19,15 +21,20 @@ const CreateItem = ({route}) => {
       if (items) {
         const newItems = [...items, {name: firstItem, param: secondItem}];
         storeItem(newItems, componentName);
-        console.log(newItems);
       } else {
         const newItems = [{name: firstItem, param: secondItem}];
         storeItem(newItems, componentName);
-        console.log(newItems);
       }
     });
-    callBack(reload + 1);
+    navigation.navigate('DisplayItems', {componentName: componentName});
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      setFirstItem(name);
+      setSecondItem(param);
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
