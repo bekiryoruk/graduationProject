@@ -1,11 +1,32 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, Image, Button, TouchableOpacity} from 'react-native';
+import React, {useState, useRef, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  Button,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import styles from './SecondModal.styles';
 import {storeItem} from '../../../helpers/storage';
 import {type} from 'os';
+import {wrapScrollView, useScrollIntoView} from 'react-native-scroll-into-view';
+
+const CustomScrollView = wrapScrollView(ScrollView);
+
+function MyScreen() {
+  return (
+    <CustomScrollView>
+      <SecondModal />
+    </CustomScrollView>
+  );
+}
 
 const SecondModal = ({navigation}) => {
+  const scrollIntoView = useScrollIntoView();
+  const viewRef = useRef();
+
   const [count, setCount] = useState(0);
 
   const goToNextStep = type => {
@@ -26,7 +47,7 @@ const SecondModal = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View ref={viewRef} style={styles.container}>
       <Image source={require('../assets/disable.png')} />
       <Text style={styles.title}>Select your disabled type</Text>
       <View style={styles.optionList}>
@@ -79,4 +100,4 @@ const SecondModal = ({navigation}) => {
   );
 };
 
-export default SecondModal;
+export default MyScreen;
