@@ -12,7 +12,7 @@ const CreateItem = ({route, navigation}) => {
   const [secondItem, setSecondItem] = useState('');
   const isFocused = useIsFocused();
 
-  const storeNewItem = () => {
+  const storeNewItem = async () => {
     if (
       (firstItem && firstItem.length === 0) ||
       (secondItem && secondItem.length === 0) ||
@@ -22,16 +22,18 @@ const CreateItem = ({route, navigation}) => {
       Alert.alert('Please enter valid input!');
       return;
     }
-    getItem(componentName).then(items => {
-      if (items) {
-        const newItems = [...items, {name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
-      } else {
-        const newItems = [{name: firstItem, param: secondItem}];
-        storeItem(newItems, componentName);
-      }
-    });
-    navigation.navigate('DisplayItems', {componentName: componentName});
+    const items = await getItem(componentName);
+    if (items) {
+      const newItems = [...items, {name: firstItem, param: secondItem}];
+      storeItem(newItems, componentName).then(() =>
+        navigation.navigate('DisplayItems', {componentName: componentName}),
+      );
+    } else {
+      const newItems = [{name: firstItem, param: secondItem}];
+      storeItem(newItems, componentName).then(() =>
+        navigation.navigate('DisplayItems', {componentName: componentName}),
+      );
+    }
   };
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -6,29 +6,22 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import {getItem} from '../../../helpers';
-import {useIsFocused} from '@react-navigation/native';
 
+import {getItem} from '../../../helpers';
 import styles from './DisplayItems.styles';
 
 const DisplayItems = ({route, navigation}) => {
   const {componentName} = route.params;
   const [data, setData] = useState();
-  const isFocused = useIsFocused();
 
   useEffect(() => {
-    setData(null);
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (isFocused) {
+    (async () => {
       if (!data) {
-        getItem(componentName).then(res => {
-          setData(res);
-        });
+        const returnData = await getItem(componentName);
+        setData(returnData);
       }
-    }
-  }, [data, isFocused]);
+    })();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,7 +57,11 @@ const DisplayItems = ({route, navigation}) => {
           <TouchableOpacity
             style={styles.savebutton}
             onPress={() =>
-              navigation.navigate('CreateItem', {componentName: componentName})
+              navigation.navigate('CreateItem', {
+                componentName: componentName,
+                name: '',
+                param: '',
+              })
             }>
             <Text style={styles.buttonText}> INSERT NEW </Text>
           </TouchableOpacity>

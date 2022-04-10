@@ -74,6 +74,7 @@ function TabNavigator() {
         options={{
           tabBarButton: () => null,
           tabBarVisible: false, //hide tab bar on this screen
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
