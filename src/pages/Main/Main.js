@@ -28,7 +28,7 @@ const Main = ({navigation}) => {
           <View style={styles.itemBlocks}>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('CreateItem', {componentName: 'Contact'})
+                navigation.navigate('DisplayItems', {componentName: 'Contact'})
               }>
               <View style={styles.item}>
                 <FontAwesome
@@ -42,7 +42,7 @@ const Main = ({navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('CreateItem', {componentName: 'Video'})
+                navigation.navigate('DisplayItems', {componentName: 'Video'})
               }>
               <View style={styles.item}>
                 <FontAwesome
@@ -56,7 +56,7 @@ const Main = ({navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('CreateItem', {componentName: 'Music'})
+                navigation.navigate('DisplayItems', {componentName: 'Music'})
               }>
               <View style={styles.item}>
                 <FontAwesome
