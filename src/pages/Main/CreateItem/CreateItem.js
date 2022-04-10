@@ -13,7 +13,12 @@ const CreateItem = ({route, navigation}) => {
   const isFocused = useIsFocused();
 
   const storeNewItem = () => {
-    if (firstItem.length === 0 || secondItem.length === 0) {
+    if (
+      (firstItem && firstItem.length === 0) ||
+      (secondItem && secondItem.length === 0) ||
+      !firstItem ||
+      !secondItem
+    ) {
       Alert.alert('Please enter valid input!');
       return;
     }
