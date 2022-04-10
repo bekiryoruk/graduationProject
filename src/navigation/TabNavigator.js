@@ -6,6 +6,7 @@ import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
 import Main from '../pages/Main';
 import {Welcome, SecondModal} from '../pages/Modals';
+import CreateItem from '../pages/Main/CreateItem';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,6 +59,14 @@ function TabNavigator() {
               focused={focused}
             />
           ),
+        }}
+      />
+      <Tab.Screen
+        name="CreateItem"
+        component={CreateItem}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
         }}
       />
       <Tab.Screen
