@@ -1,4 +1,3 @@
-import {NONAME} from 'dns';
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -8,13 +7,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sectionTitle: {
-    marginTop: 60,
-    width: '100%',
     fontSize: 26,
-    flex: 1,
-    margin: 0,
-    fontWeight: 'bold',
+    margin: 'auto',
+    fontWeight: '700',
     color: 'black',
+  },
+  inputContainer: {
+    width: '100%',
   },
   savebutton: {
     display: 'flex',

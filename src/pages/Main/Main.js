@@ -26,7 +26,10 @@ const Main = ({navigation}) => {
         <ScrollView>
           <Text style={styles.titleText}>Settings</Text>
           <View style={styles.itemBlocks}>
-            <TouchableOpacity onPress={() => navigation.navigate('CreateItem')}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CreateItem', {componentName: 'Contact'})
+              }>
               <View style={styles.item}>
                 <FontAwesome
                   style={styles.icon}
@@ -37,7 +40,10 @@ const Main = ({navigation}) => {
                 <Text style={styles.headerText}>{'Contacts'}</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('CreateItem')}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CreateItem', {componentName: 'Video'})
+              }>
               <View style={styles.item}>
                 <FontAwesome
                   style={styles.icon}
@@ -48,7 +54,10 @@ const Main = ({navigation}) => {
                 <Text style={styles.headerText}>{'Videos'}</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('CreateItem')}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CreateItem', {componentName: 'Music'})
+              }>
               <View style={styles.item}>
                 <FontAwesome
                   style={styles.icon}
