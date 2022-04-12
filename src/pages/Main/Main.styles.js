@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginTop: 5,
-    marginLeft: 10,
+    marginLeft: 20,
   },
   item: {
     display: 'flex',
