@@ -1,26 +1,33 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
     backgroundColor: '#EEEEEE',
     height: '100%',
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 6,
+    paddingBottom: 20,
   },
   sectionTitle: {
     fontSize: 26,
-    margin: 'auto',
     fontWeight: '600',
     color: 'black',
-    paddingTop: 6,
+    position: 'absolute',
+    left: '50%',
+    transform: [{translateX: -Dimensions.get('window').width * 0.24}],
   },
+  icon: {},
   scroll: {
     width: '100%',
-  },
-  wholeContent: {
-    padding: 20,
   },
   itemCard: {
     marginBottom: 10,
@@ -42,22 +49,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#8B8B8B',
   },
-  savebutton: {
+  insertButton: {
     marginBottom: 50,
     display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  insertButtonContent: {
+    backgroundColor: '#FFFFFF',
+    padding: 8,
+    display: 'flex',
+    flexDirection: 'row',
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  insertButtonIcon: {
+    paddingLeft: 2,
+    fontWeight: '300',
   },
   buttonText: {
-    paddingBottom: 9,
-    paddingTop: 11,
-    paddingLeft: 40,
-    marginTop: 20,
-    paddingRight: 40,
-    fontWeight: 'bold',
-    borderWidth: 2,
-    borderRadius: 10,
-    borderColor: '#333',
+    fontSize: 18,
   },
 });
 

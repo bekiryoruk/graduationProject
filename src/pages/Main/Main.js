@@ -35,7 +35,7 @@ const Main = ({navigation}) => {
                   style={styles.icon}
                   name={'address-book'}
                   color={'#000000'}
-                  size={30}
+                  size={25}
                 />
                 <Text style={styles.headerText}>{'Contacts'}</Text>
               </View>
@@ -49,7 +49,7 @@ const Main = ({navigation}) => {
                   style={styles.icon}
                   name={'play'}
                   color={'#000000'}
-                  size={30}
+                  size={25}
                 />
                 <Text style={styles.headerText}>{'Videos'}</Text>
               </View>
@@ -63,7 +63,7 @@ const Main = ({navigation}) => {
                   style={styles.icon}
                   name={'music'}
                   color={'#000000'}
-                  size={30}
+                  size={25}
                 />
                 <Text style={styles.headerText}>{'Musics'}</Text>
               </View>
