@@ -7,7 +7,7 @@ import {storeItem, getItem} from '../../../helpers';
 import styles from './CreateItem.styles';
 
 const CreateItem = ({route, navigation}) => {
-  const {componentName, name, param} = route.params;
+  const {componentName, name, param, index} = route.params;
   const [firstItem, setFirstItem] = useState('');
   const [secondItem, setSecondItem] = useState('');
   const isFocused = useIsFocused();
@@ -22,7 +22,17 @@ const CreateItem = ({route, navigation}) => {
       Alert.alert('Please enter valid input!');
       return;
     }
-    const items = await getItem(componentName);
+    let items = await getItem(componentName);
+    if (index && index >= 0) {
+      items[index] = {
+        name: firstItem,
+        param: secondItem,
+      };
+      storeItem(items, componentName).then(() =>
+        navigation.navigate('DisplayItems', {componentName: componentName}),
+      );
+      return;
+    }
     if (items) {
       const newItems = [...items, {name: firstItem, param: secondItem}];
       storeItem(newItems, componentName).then(() =>

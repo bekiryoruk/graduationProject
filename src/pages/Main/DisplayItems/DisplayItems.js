@@ -52,6 +52,7 @@ const DisplayItems = ({route, navigation}) => {
                         componentName: componentName,
                         name: item.name,
                         param: item.param,
+                        index: index,
                       })
                     }>
                     <View style={styles.itemCard}>
