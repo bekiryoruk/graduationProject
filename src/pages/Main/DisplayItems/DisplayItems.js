@@ -74,6 +74,7 @@ const DisplayItems = ({route, navigation}) => {
                 componentName: componentName,
                 name: '',
                 param: '',
+                index: -1,
               })
             }>
             <View style={styles.insertButtonContent}>
