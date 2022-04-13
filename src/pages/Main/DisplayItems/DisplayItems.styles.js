@@ -39,14 +39,14 @@ const styles = StyleSheet.create({
   itemCardTextContainer: {
     backgroundColor: '#FFFFFF',
     paddingLeft: 15,
-    paddingBottom: 20,
-    paddingTop: 20,
+    paddingBottom: 15,
+    paddingTop: 15,
     marginBottom: 7,
     marginTop: 7,
     borderRadius: 10,
   },
   itemCardText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#8B8B8B',
   },
   insertButton: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   insertButtonContent: {
     backgroundColor: '#FFFFFF',
-    padding: 8,
+    padding: 12,
     display: 'flex',
     flexDirection: 'row',
     borderRadius: 20,
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
+    fontWeight: '700',
   },
 });
 

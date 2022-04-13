@@ -2,17 +2,16 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CameraScreen from '../pages/CameraScreen';
-import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
-import Main from '../pages/Main';
 import {
   Welcome,
   SecondModal,
   ThirdModal,
   FourthModal,
   FifthModal,
-  DisplayItems,
 } from '../pages/Modals';
+
+import {CreateItem, DisplayItems, Main} from '../pages/Main';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,8 +28,8 @@ function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="Home"
-        component={Main}
+        name="CameraScreen"
+        component={CameraScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
@@ -42,26 +41,13 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="CameraScreen"
-        component={CameraScreen}
+        name="Home"
+        component={Main}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
-              text={'Camera'}
-              src={require('../assets/navigation/camera.png')}
-              focused={focused}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Calibration"
-        component={Calibration}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <IconButton
-              text={'Calibration'}
-              src={require('../assets/navigation/calibrationn.png')}
+              text={'Settings'}
+              src={require('../assets/navigation/setting.png')}
               focused={focused}
             />
           ),

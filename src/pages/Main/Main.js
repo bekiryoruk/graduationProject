@@ -4,6 +4,7 @@ import {
   ScrollView,
   Text,
   View,
+  Button,
   TouchableOpacity,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -22,6 +23,11 @@ const Main = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
+        <Button
+          onPress={() => navigation.navigate('WelcomeModal')}
+          title="Open Onboarding"
+        />
+
         <View style={{flexDirection: 'row', padding: 10}}></View>
         <ScrollView>
           <Text style={styles.titleText}>Settings</Text>
