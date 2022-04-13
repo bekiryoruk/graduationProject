@@ -1,20 +1,20 @@
-import {NONAME} from 'dns';
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#E5E5E5',
+    height: '100%',
   },
   sectionTitle: {
-    marginTop: 60,
-    width: '100%',
     fontSize: 26,
-    flex: 1,
-    margin: 0,
-    fontWeight: 'bold',
+    margin: 'auto',
+    fontWeight: '700',
     color: 'black',
+  },
+  inputContainer: {
+    width: '100%',
   },
   savebutton: {
     display: 'flex',

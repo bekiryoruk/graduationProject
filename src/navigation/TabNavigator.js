@@ -11,6 +11,7 @@ import {
   ThirdModal,
   FourthModal,
   FifthModal,
+  DisplayItems,
 } from '../pages/Modals';
 
 const Tab = createBottomTabNavigator();
@@ -64,6 +65,23 @@ function TabNavigator() {
               focused={focused}
             />
           ),
+        }}
+      />
+      <Tab.Screen
+        name="CreateItem"
+        component={CreateItem}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="DisplayItems"
+        component={DisplayItems}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
