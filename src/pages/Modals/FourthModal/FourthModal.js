@@ -23,17 +23,18 @@ const FourthModal = ({navigation}) => {
     <View style={styles.container}>
       <Image source={require('../assets/video.png')} />
       <Text style={styles.title}>Insert your youtube video link</Text>
-      <View style={styles.optionList}></View>
-      <CustomTextInput
-        onChange={e => setVideoName(e)}
-        value={videoName}
-        placeholder={'Enter your video name'}
-      />
-      <CustomTextInput
-        onChange={e => setVideoLink(e)}
-        value={videoLink}
-        placeholder={'Enter your video link'}
-      />
+      <View style={styles.inputs}>
+        <CustomTextInput
+          onChange={e => setVideoName(e)}
+          value={videoName}
+          placeholder={'Enter your video name'}
+        />
+        <CustomTextInput
+          onChange={e => setVideoLink(e)}
+          value={videoLink}
+          placeholder={'Enter your video link'}
+        />
+      </View>
       <Image
         style={styles.circles}
         source={require('../assets/fourth-circle.png')}

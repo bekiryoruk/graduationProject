@@ -23,17 +23,18 @@ const FifthModal = ({navigation}) => {
     <View style={styles.container}>
       <Image source={require('../assets/music.png')} />
       <Text style={styles.title}>Insert your spotify music link</Text>
-      <View style={styles.optionList}></View>
-      <CustomTextInput
-        onChange={e => setMusicName(e)}
-        value={musicName}
-        placeholder={'Enter your music name'}
-      />
-      <CustomTextInput
-        onChange={e => setMusicLink(e)}
-        value={musicLink}
-        placeholder={'Enter your music link'}
-      />
+      <View style={styles.inputs}>
+        <CustomTextInput
+          onChange={e => setMusicName(e)}
+          value={musicName}
+          placeholder={'Enter your music name'}
+        />
+        <CustomTextInput
+          onChange={e => setMusicLink(e)}
+          value={musicLink}
+          placeholder={'Enter your music link'}
+        />
+      </View>
       <Image
         style={styles.circles}
         source={require('../assets/fifth-circle.png')}

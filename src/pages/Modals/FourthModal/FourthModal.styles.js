@@ -4,19 +4,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 50,
+    justifyContent: 'space-around',
+    paddingTop: 20,
     paddingBottom: 30,
     paddingRight: 20,
     paddingLeft: 20,
     backgroundColor: '#EECCCC',
   },
+  inputs: {
+    width: '100%',
+  },
   title: {
-    fontSize: 35,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '600',
     fontFamily: 'Mulish',
     padding: 15,
     textAlign: 'center',
-    marginTop: 30,
+    marginTop: 20,
   },
   circles: {
     marginTop: 20,
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
     width: 120,
     bottom: 0,
     borderRadius: 40,
-    borderWidth: 11,
+    borderWidth: 13,
   },
 });
 

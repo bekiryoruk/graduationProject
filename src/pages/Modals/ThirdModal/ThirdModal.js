@@ -28,17 +28,18 @@ const ThirdModal = ({navigation}) => {
     <View style={styles.container}>
       <Image source={require('../assets/contact.png')} />
       <Text style={styles.title}>Insert your first contact person</Text>
-      <View style={styles.optionList}></View>
-      <CustomTextInput
-        onChange={e => setContactName(e)}
-        value={contactName}
-        placeholder={'Enter your contact name'}
-      />
-      <CustomTextInput
-        onChange={e => setContactNumber(e)}
-        value={contactNumber}
-        placeholder={'Enter your contact name'}
-      />
+      <View style={styles.inputs}>
+        <CustomTextInput
+          onChange={e => setContactName(e)}
+          value={contactName}
+          placeholder={'Enter your contact name'}
+        />
+        <CustomTextInput
+          onChange={e => setContactNumber(e)}
+          value={contactNumber}
+          placeholder={'Enter your contact name'}
+        />
+      </View>
       <Image
         style={styles.circles}
         source={require('../assets/third-circle.png')}

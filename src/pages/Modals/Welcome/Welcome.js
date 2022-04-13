@@ -10,7 +10,7 @@ const Welcome = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/welcome.png')} />
+      <Image style={styles.image} source={require('../assets/welcome.png')} />
       <Text style={styles.title}>Welcome to the Touchless</Text>
       <Text style={styles.sectionTitle}>
         Quickly complete the onboarding steps to start using the Touchless.

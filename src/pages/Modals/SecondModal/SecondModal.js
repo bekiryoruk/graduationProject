@@ -10,21 +10,8 @@ import {
 
 import styles from './SecondModal.styles';
 import {storeItem} from '../../../helpers/storage';
-import {type} from 'os';
-import {wrapScrollView, useScrollIntoView} from 'react-native-scroll-into-view';
-
-const CustomScrollView = wrapScrollView(ScrollView);
-
-function MyScreen() {
-  return (
-    <CustomScrollView>
-      <SecondModal />
-    </CustomScrollView>
-  );
-}
 
 const SecondModal = ({navigation}) => {
-  const scrollIntoView = useScrollIntoView();
   const viewRef = useRef();
 
   const [count, setCount] = useState(0);
@@ -100,4 +87,4 @@ const SecondModal = ({navigation}) => {
   );
 };
 
-export default MyScreen;
+export default SecondModal;
