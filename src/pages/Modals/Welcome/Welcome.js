@@ -1,19 +1,30 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
-import {storeItem} from '../../../helpers/storage';
+import {View, Text, Image, Button} from 'react-native';
+
+import styles from './Welcome.styles';
 
 const Welcome = ({navigation}) => {
-  const setUserInfo = type => {
-    storeItem(type, 'userType');
+  const goToNextStep = type => {
     navigation.navigate('SecondModal');
   };
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{fontSize: 30}}>Neden kullanmak istiyorsunuz</Text>
-      <View>
-        <Button onPress={() => setUserInfo('Göz')} title="Göz" />
-        <Button onPress={() => setUserInfo('Ses')} title="Ses" />
+    <View style={styles.container}>
+      <Image style={styles.image} source={require('../assets/welcome.png')} />
+      <Text style={styles.title}>Welcome to the Touchless</Text>
+      <Text style={styles.sectionTitle}>
+        Quickly complete the onboarding steps to start using the Touchless.
+      </Text>
+      <Image
+        style={styles.circles}
+        source={require('../assets/first-circle.png')}
+      />
+      <View style={styles.nextButton}>
+        <Button
+          color={'black'}
+          onPress={() => goToNextStep()}
+          title={'START'}
+        />
       </View>
     </View>
   );

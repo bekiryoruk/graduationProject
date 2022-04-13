@@ -82,7 +82,7 @@ const DisplayItems = ({route, navigation}) => {
                 style={styles.insertButtonIcon}
                 name={'plus'}
                 color={'#000000'}
-                size={24}
+                size={16}
               />
               <Text style={styles.buttonText}> INSERT NEW </Text>
             </View>

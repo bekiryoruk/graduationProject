@@ -2,9 +2,15 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CameraScreen from '../pages/CameraScreen';
-import Calibration from '../pages/Calibration';
 import IconButton from './IconButton';
-import {Welcome, SecondModal} from '../pages/Modals';
+import {
+  Welcome,
+  SecondModal,
+  ThirdModal,
+  FourthModal,
+  FifthModal,
+} from '../pages/Modals';
+
 import {CreateItem, DisplayItems, Main} from '../pages/Main';
 
 const Tab = createBottomTabNavigator();
@@ -22,8 +28,8 @@ function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="Home"
-        component={Main}
+        name="CameraScreen"
+        component={CameraScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
@@ -35,26 +41,13 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="CameraScreen"
-        component={CameraScreen}
+        name="Home"
+        component={Main}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
-              text={'Camera'}
-              src={require('../assets/navigation/camera.png')}
-              focused={focused}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Calibration"
-        component={Calibration}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <IconButton
-              text={'Calibration'}
-              src={require('../assets/navigation/calibrationn.png')}
+              text={'Settings'}
+              src={require('../assets/navigation/setting.png')}
               focused={focused}
             />
           ),
@@ -88,6 +81,30 @@ function TabNavigator() {
       <Tab.Screen
         name="SecondModal"
         component={SecondModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="ThirdModal"
+        component={ThirdModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="FourthModal"
+        component={FourthModal}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="FifthModal"
+        component={FifthModal}
         options={{
           tabBarButton: () => null,
           tabBarVisible: false, //hide tab bar on this screen
