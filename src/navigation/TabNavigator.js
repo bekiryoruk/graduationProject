@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import CameraScreen from '../pages/CameraScreen';
@@ -13,10 +13,23 @@ import {
 
 import {CreateItem, DisplayItems, Main} from '../pages/Main';
 import Home from '../pages/Home';
+import {getItem} from '../helpers';
 
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    (async () => {
+      if (!data) {
+        const returnData = await getItem('userType');
+        console.log(returnData);
+        setData(returnData);
+      }
+    })();
+  }, []);
+
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -30,8 +43,9 @@ function TabNavigator() {
       }}>
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={data && data === 'VisionDisable' ? CameraScreen : Home}
         options={{
+          unmountOnBlur: true,
           tabBarIcon: ({focused}) => (
             <IconButton
               text={'Home'}

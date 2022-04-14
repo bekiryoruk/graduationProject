@@ -91,7 +91,7 @@ export default class CameraScreen extends React.Component {
     await BackgroundService.stop();
   };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
-  componentWillMount = () => {
+  UNSAFE_componentWillMount = () => {
     Voice.onSpeechStart = this.onSpeechStartHandler;
     Voice.onSpeechEnd = this.onSpeechEndHandler;
     Voice.onSpeechResults = this.onSpeechResultsHandler;
