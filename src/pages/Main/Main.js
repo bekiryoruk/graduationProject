@@ -74,6 +74,20 @@ const Main = ({navigation}) => {
                 <Text style={styles.headerText}>{'Musics'}</Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('DisplayItems', {componentName: 'Disabled'})
+              }>
+              <View style={styles.item}>
+                <FontAwesome
+                  style={styles.icon}
+                  name={'list'}
+                  color={'#000000'}
+                  size={25}
+                />
+                <Text style={styles.headerText}>{'Disabled type'}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
