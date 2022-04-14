@@ -17,13 +17,9 @@ const DisplayItems = ({route, navigation}) => {
   const [data, setData] = useState();
   const [disabledType, setDisabledType] = useState();
 
-  const setUserInfo = type => {
-    type === 'PhysicalDisable'
-      ? setDisabledType('PhysicalDisable')
-      : type === 'VoiceDisable'
-      ? setDisabledType('VoiceDisable')
-      : setDisabledType('VisionDisable');
-    storeItem(type, 'userType');
+  const setUserInfo = async type => {
+    setDisabledType(type);
+    await storeItem(type, 'userType');
   };
 
   useEffect(() => {
@@ -34,7 +30,7 @@ const DisplayItems = ({route, navigation}) => {
       }
       if (!disabledType) {
         const userDisabledType = await getItem('userType');
-        console.log(userDisabledType);
+        setDisabledType(userDisabledType);
       }
     })();
   }, []);
