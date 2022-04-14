@@ -12,6 +12,7 @@ import {
 } from '../pages/Modals';
 
 import {CreateItem, DisplayItems, Main} from '../pages/Main';
+import Home from '../pages/Home';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,8 +29,8 @@ function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="CameraScreen"
-        component={CameraScreen}
+        name="Home"
+        component={Home}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
@@ -41,7 +42,7 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Home"
+        name="Main"
         component={Main}
         options={{
           tabBarIcon: ({focused}) => (

@@ -22,7 +22,7 @@ const ThirdModal = ({navigation}) => {
   }, []);
 
   /*return (
-  <Button onPress={() => navigation.navigate('Home')} title="Start" />
+  <Button onPress={() => navigation.navigate('Main')} title="Start" />
   );*/
   return (
     <View style={styles.container}>
