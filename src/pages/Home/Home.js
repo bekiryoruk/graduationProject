@@ -7,7 +7,7 @@ const Home = ({navigation}) => {
   useEffect(() => {
     getItem('userType').then(data => {
       if (!data) {
-        navigation.navigate('SecondModal');
+        navigation.navigate('WelcomeModal');
       } else {
         navigation.navigate(data);
       }
