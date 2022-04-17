@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,17 +9,8 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './Main.styles';
-import {getItem} from '../../helpers';
 
 const Main = ({navigation}) => {
-  useEffect(() => {
-    getItem('userType').then(data => {
-      if (!data) {
-        navigation.navigate('SecondModal');
-      }
-    });
-  }, []);
-
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>

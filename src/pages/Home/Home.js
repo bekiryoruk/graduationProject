@@ -1,8 +1,19 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
 
+import {getItem} from '../../helpers';
 
-const Home = () => {
+const Home = ({navigation}) => {
+  useEffect(() => {
+    getItem('userType').then(data => {
+      if (!data) {
+        navigation.navigate('SecondModal');
+      } else {
+        navigation.navigate(data);
+      }
+    });
+  }, []);
+
   return (
     <View>
       <Text>Home Page</Text>
