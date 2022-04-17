@@ -14,7 +14,7 @@ import BackgroundService from 'react-native-background-actions';
 
 import styles from './VisionDisable.styles';
 import {callPhone, sendSMS} from '../../../helpers';
-
+import {BackPressHandler} from '../../../components';
 const landmarkSize = 10; // NOTE: bunu değiştirirsen style dosyasından da değişiklik yap, * landmark *
 export default class VisionDisable extends React.Component {
   state = {
@@ -91,6 +91,9 @@ export default class VisionDisable extends React.Component {
   };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
   UNSAFE_componentWillMount = () => {
+    if (Platform.OS == 'android') {
+      BackPressHandler(this.BackStuff);
+    }
     Voice.onSpeechStart = this.onSpeechStartHandler;
     Voice.onSpeechEnd = this.onSpeechEndHandler;
     Voice.onSpeechResults = this.onSpeechResultsHandler;
@@ -98,6 +101,10 @@ export default class VisionDisable extends React.Component {
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
+  };
+
+  BackStuff = () => {
+    // console.log('back button pressed');
   };
 
   onSpeechStartHandler = e => {
