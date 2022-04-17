@@ -20,6 +20,10 @@ const SecondModal = ({navigation}) => {
     navigation.navigate('ThirdModal');
   };
 
+  const skipForNow = type => {
+    navigation.navigate('Settings');
+  };
+
   const goToBackStep = type => {
     navigation.navigate('WelcomeModal');
   };
@@ -35,6 +39,11 @@ const SecondModal = ({navigation}) => {
 
   return (
     <View ref={viewRef} style={styles.container}>
+      <View style={styles.skipForNow} onPress={() => skipForNow()}>
+        <Text style={styles.skipForNowText} onPress={() => skipForNow()}>
+          SKIP
+        </Text>
+      </View>
       <Image source={require('../assets/disable.png')} />
       <Text style={styles.title}>Select your disabled type</Text>
       <View style={styles.optionList}>
