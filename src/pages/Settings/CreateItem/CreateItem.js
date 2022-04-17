@@ -23,7 +23,7 @@ const CreateItem = ({route, navigation}) => {
       return;
     }
     let items = await getItem(componentName);
-    if (index && index >= 0) {
+    if (index != undefined && index >= 0) {
       items[index] = {
         name: firstItem,
         param: secondItem,
