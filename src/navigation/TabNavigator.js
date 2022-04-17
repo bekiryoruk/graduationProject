@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import CameraScreen from '../pages/CameraScreen';
+import {getItem} from '../helpers';
 import IconButton from './IconButton';
+
 import {
   Welcome,
   SecondModal,
@@ -11,11 +12,28 @@ import {
   FifthModal,
 } from '../pages/Modals';
 
-import {CreateItem, DisplayItems, Main} from '../pages/Main';
+import {CreateItem, DisplayItems, Settings} from '../pages/Settings';
+import {
+  Home,
+  VoiceDisable,
+  PhysicalDisable,
+  VisionDisable,
+} from '../pages/Home';
 
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    (async () => {
+      if (!data) {
+        const returnData = await getItem('userType');
+        setData(returnData);
+      }
+    })();
+  }, []);
+
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -28,9 +46,10 @@ function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="CameraScreen"
-        component={CameraScreen}
+        name="Home"
+        component={Home}
         options={{
+          unmountOnBlur: true,
           tabBarIcon: ({focused}) => (
             <IconButton
               text={'Home'}
@@ -41,8 +60,8 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Home"
-        component={Main}
+        name="Settings"
+        component={Settings}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton
@@ -58,7 +77,7 @@ function TabNavigator() {
         component={CreateItem}
         options={{
           tabBarButton: () => null,
-          tabBarVisible: false, //hide tab bar on this screen
+          tabBarVisible: true, //hide tab bar on this screen
         }}
       />
       <Tab.Screen
@@ -66,7 +85,7 @@ function TabNavigator() {
         component={DisplayItems}
         options={{
           tabBarButton: () => null,
-          tabBarVisible: false, //hide tab bar on this screen
+          tabBarVisible: true, //hide tab bar on this screen
           unmountOnBlur: true,
         }}
       />
@@ -108,6 +127,30 @@ function TabNavigator() {
         options={{
           tabBarButton: () => null,
           tabBarVisible: false, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="PhysicalDisable"
+        component={PhysicalDisable}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: true, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="VoiceDisable"
+        component={VoiceDisable}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: true, //hide tab bar on this screen
+        }}
+      />
+      <Tab.Screen
+        name="VisionDisable"
+        component={VisionDisable}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: true, //hide tab bar on this screen
         }}
       />
     </Tab.Navigator>

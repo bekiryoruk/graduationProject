@@ -38,7 +38,7 @@ const DisplayItems = ({route, navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
           <FontAwesome
             style={styles.icon}
             name={'angle-left'}

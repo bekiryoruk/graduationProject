@@ -2,22 +2,21 @@ import React from 'react';
 import {
   StyleSheet,
   Text,
-  Image,
   View,
   TouchableOpacity,
-  Slider,
-  TouchableWithoutFeedback,
   Dimensions,
   Linking,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
-import {callPhone, sendSMS} from '../../helpers';
 import RNCalendarEvents from 'react-native-calendar-events';
 import Voice from '@react-native-community/voice';
 import BackgroundService from 'react-native-background-actions';
 
-const landmarkSize = 10;
-export default class CameraScreen extends React.Component {
+import styles from './VisionDisable.styles';
+import {callPhone, sendSMS} from '../../../helpers';
+import {BackPressHandler} from '../../../components';
+const landmarkSize = 10; // NOTE: bunu değiştirirsen style dosyasından da değişiklik yap, * landmark *
+export default class VisionDisable extends React.Component {
   state = {
     flash: 'off',
     zoom: 0,
@@ -91,7 +90,10 @@ export default class CameraScreen extends React.Component {
     await BackgroundService.stop();
   };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
-  componentWillMount = () => {
+  UNSAFE_componentWillMount = () => {
+    if (Platform.OS == 'android') {
+      BackPressHandler(this.BackStuff);
+    }
     Voice.onSpeechStart = this.onSpeechStartHandler;
     Voice.onSpeechEnd = this.onSpeechEndHandler;
     Voice.onSpeechResults = this.onSpeechResultsHandler;
@@ -99,6 +101,10 @@ export default class CameraScreen extends React.Component {
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
     };
+  };
+
+  BackStuff = () => {
+    // console.log('back button pressed');
   };
 
   onSpeechStartHandler = e => {
@@ -594,105 +600,3 @@ export default class CameraScreen extends React.Component {
     return <View style={styles.container}>{this.renderCamera()}</View>;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: '#000',
-  },
-  flipButton: {
-    flex: 0.2,
-    height: 40,
-    bottom: 60,
-    marginHorizontal: 2,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 8,
-    borderColor: 'white',
-    color: 'white',
-    borderWidth: 2,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selectedButton: {
-    flex: 0.2,
-    height: 40,
-    bottom: 60,
-    marginHorizontal: 2,
-    marginBottom: 10,
-    marginTop: 10,
-    borderRadius: 8,
-    borderColor: '#333',
-    color: 'white',
-    borderWidth: 2,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  autoFocusBox: {
-    position: 'absolute',
-    height: 64,
-    width: 64,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'white',
-    opacity: 0.4,
-  },
-  zoomText: {
-    position: 'absolute',
-    bottom: 70,
-    zIndex: 2,
-    left: 2,
-  },
-  picButton: {
-    backgroundColor: 'white',
-  },
-  selectedPicButton: {
-    backgroundColor: '#aaa',
-  },
-  facesContainer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    top: 0,
-  },
-  face: {
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 2,
-    position: 'absolute',
-    borderColor: '#FFD700',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  landmark: {
-    width: landmarkSize,
-    height: landmarkSize,
-    position: 'absolute',
-    backgroundColor: 'red',
-  },
-  faceText: {
-    color: '#FFD700',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    margin: 10,
-    backgroundColor: 'transparent',
-  },
-  text: {
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 2,
-    position: 'absolute',
-    borderColor: '#F00',
-    justifyContent: 'center',
-  },
-  textBlock: {
-    color: '#F00',
-    position: 'absolute',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-  },
-});
