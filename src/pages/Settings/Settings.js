@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import styles from './Main.styles';
+import styles from './Settings.styles';
 
-const Main = ({navigation}) => {
+const Settings = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>
@@ -86,4 +86,4 @@ const Main = ({navigation}) => {
   );
 };
 
-export default Main;
+export default Settings;

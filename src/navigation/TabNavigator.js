@@ -12,7 +12,7 @@ import {
   FifthModal,
 } from '../pages/Modals';
 
-import {CreateItem, DisplayItems, Main} from '../pages/Main';
+import {CreateItem, DisplayItems, Settings} from '../pages/Settings';
 import {
   Home,
   VoiceDisable,
@@ -60,8 +60,8 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen
-        name="Main"
-        component={Main}
+        name="Settings"
+        component={Settings}
         options={{
           tabBarIcon: ({focused}) => (
             <IconButton

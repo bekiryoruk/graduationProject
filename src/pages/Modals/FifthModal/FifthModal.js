@@ -8,7 +8,7 @@ const FifthModal = ({navigation}) => {
   const [musicLink, setMusicLink] = useState('');
 
   const goToNextStep = type => {
-    navigation.navigate('Main');
+    navigation.navigate('Settings');
   };
 
   const goToBackStep = type => {
