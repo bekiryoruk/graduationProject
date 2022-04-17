@@ -8,8 +8,17 @@ const Welcome = ({navigation}) => {
     navigation.navigate('SecondModal');
   };
 
+  const skipForNow = type => {
+    navigation.navigate('Settings');
+  };
+
   return (
     <View style={styles.container}>
+      <View style={styles.skipForNow} onPress={() => skipForNow()}>
+        <Text style={styles.skipForNowText} onPress={() => skipForNow()}>
+          SKIP
+        </Text>
+      </View>
       <Image style={styles.image} source={require('../assets/welcome.png')} />
       <Text style={styles.title}>Welcome to the Touchless</Text>
       <Text style={styles.sectionTitle}>

@@ -32,12 +32,22 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
   },
+  skipForNow: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+  },
+  skipForNowText: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
   nextButton: {
     color: 'black',
     width: 120,
     bottom: 0,
     borderRadius: 40,
-    borderWidth: 13,
+    borderWidth: 9,
   },
 });
 
