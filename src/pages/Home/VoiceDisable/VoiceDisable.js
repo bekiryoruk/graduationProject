@@ -14,13 +14,16 @@ import Voice from '@react-native-community/voice';
 import BackgroundService from 'react-native-background-actions';
 
 import styles from './VoiceDisable.styles';
-import {callPhone, sendSMS} from '../../../helpers';
+import {callPhone, sendSMS, getItem} from '../../../helpers';
 import {BackPressHandler} from '../../../components';
 import IconButton from '../../../../src/navigation/IconButton';
 
 export default class VoiceDisable extends React.Component {
   state = {
     voiceResult: '',
+    phoneNumber: '',
+    musicLink: '',
+    videoLink: '',
   };
 
   sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
@@ -56,9 +59,29 @@ export default class VoiceDisable extends React.Component {
   };
 
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
-  UNSAFE_componentWillMount = () => {
+  UNSAFE_componentWillMount = async () => {
     if (Platform.OS === 'android') {
       BackPressHandler(this.BackStuff);
+    }
+    const returnContactData = await getItem('Contact');
+    if (returnContactData !== null && returnContactData !== undefined) {
+      this.setState({
+        phoneNumber: returnContactData && returnContactData[0]?.param,
+      });
+    }
+
+    const returnVideoData = await getItem('Video');
+    if (returnVideoData !== null && returnVideoData !== undefined) {
+      this.setState({
+        videoLink: returnVideoData && returnVideoData[0]?.param,
+      });
+    }
+
+    const returnMusicData = await getItem('Music');
+    if (returnMusicData !== null && returnMusicData !== undefined) {
+      this.setState({
+        musicLink: returnMusicData && returnMusicData[0]?.param,
+      });
     }
     Voice.onSpeechStart = this.onSpeechStartHandler;
     Voice.onSpeechEnd = this.onSpeechEndHandler;
@@ -127,11 +150,11 @@ export default class VoiceDisable extends React.Component {
   };
 
   callAnyone = async function () {
-    callPhone('+905436083152');
+    callPhone(this.state.phoneNumber);
   };
 
   sendSms = async function () {
-    sendSMS(['+905436083152'], 'selam');
+    sendSMS([this.state.phoneNumber], 'selam');
     /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
     const mobile = '+905345242175';
     let url =
@@ -140,13 +163,11 @@ export default class VoiceDisable extends React.Component {
   };
 
   openSpotify = async function () {
-    Linking.openURL(
-      'https://open.spotify.com/playlist/37i9dQZF1E4yMk2wN0k5C4?si=57ce9467c865431d',
-    );
+    Linking.openURL(this.state.musicLink);
   };
 
   openYoutube = async function () {
-    Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
+    Linking.openURL(this.state.videoLink);
   };
 
   turnBackToApp = async function () {
