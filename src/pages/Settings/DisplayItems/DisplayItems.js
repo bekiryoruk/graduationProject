@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -7,19 +7,27 @@ import {
   ScrollView,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {storeItem} from '../../../helpers/storage';
 
-import {getItem} from '../../../helpers';
+import {getItem, storeItem} from '../../../helpers';
 import styles from './DisplayItems.styles';
 
 const DisplayItems = ({route, navigation}) => {
   const {componentName} = route.params;
   const [data, setData] = useState();
   const [disabledType, setDisabledType] = useState();
+  const [rerender, setRerender] = useState({});
 
   const setUserInfo = async type => {
     setDisabledType(type);
     await storeItem(type, 'userType');
+  };
+
+  const deleteItem = async index => {
+    data.splice(index, 1);
+    storeItem(data, componentName).then(() => {
+      setData(null); // to fetch data again
+      setRerender({});
+    });
   };
 
   useEffect(() => {
@@ -33,7 +41,7 @@ const DisplayItems = ({route, navigation}) => {
         setDisabledType(userDisabledType);
       }
     })();
-  }, []);
+  }, [rerender]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,9 +67,16 @@ const DisplayItems = ({route, navigation}) => {
               data.map((item, index) => {
                 return (
                   <View key={index}>
-                    <Text style={styles.itemCardTitle}>
-                      {componentName} {index + 1}
-                    </Text>
+                    <View style={styles.cardHeader}>
+                      <Text style={styles.itemCardTitle}>
+                        {componentName} {index + 1}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.deleteContainer}
+                        onPress={() => deleteItem(index)}>
+                        <Text style={styles.deleteContainerText}>DELETE</Text>
+                      </TouchableOpacity>
+                    </View>
                     <TouchableOpacity
                       onPress={() =>
                         navigation.navigate('CreateItem', {

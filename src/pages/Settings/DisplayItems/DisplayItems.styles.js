@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
   },
   itemCardTitle: {
     fontSize: 20,
-    paddingBottom: 8,
   },
   itemCardTextContainer: {
     backgroundColor: '#FFFFFF',
@@ -65,6 +64,15 @@ const styles = StyleSheet.create({
   insertButtonIcon: {
     paddingLeft: 2,
     fontWeight: '300',
+  },
+  cardHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  deleteContainerText: {
+    color: 'red',
+    fontWeight: '700',
   },
   buttonText: {
     fontSize: 18,
