@@ -9,7 +9,11 @@ const Home = ({navigation}) => {
       if (!data) {
         navigation.navigate('WelcomeModal');
       } else {
-        navigation.navigate(data);
+        if (data === 'VisionDisable') {
+          navigation.navigate('VoiceDisable');
+        } else {
+          navigation.navigate('VisionDisable');
+        }
       }
     });
   }, []);
