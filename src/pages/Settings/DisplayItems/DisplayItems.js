@@ -74,7 +74,7 @@ const DisplayItems = ({route, navigation}) => {
                       <TouchableOpacity
                         style={styles.deleteContainer}
                         onPress={() => deleteItem(index)}>
-                        <Text>Delete</Text>
+                        <Text style={styles.deleteContainerText}>DELETE</Text>
                       </TouchableOpacity>
                     </View>
                     <TouchableOpacity

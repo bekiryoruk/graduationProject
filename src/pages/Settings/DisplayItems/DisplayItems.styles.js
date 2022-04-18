@@ -70,8 +70,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  deleteContainer: {
-    backgroundColor: 'red',
+  deleteContainerText: {
+    color: 'red',
+    fontWeight: '700',
   },
   buttonText: {
     fontSize: 18,
