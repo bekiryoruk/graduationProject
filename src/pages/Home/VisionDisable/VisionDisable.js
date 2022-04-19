@@ -1,16 +1,7 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Dimensions,
-  Linking,
-} from 'react-native';
+import {Text, View, TouchableOpacity, Dimensions, Linking} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import RNCalendarEvents from 'react-native-calendar-events';
-import Voice from '@react-native-community/voice';
-import BackgroundService from 'react-native-background-actions';
 
 import styles from './VisionDisable.styles';
 import {callPhone, sendSMS, getItem} from '../../../helpers';
@@ -45,7 +36,6 @@ export default class VisionDisable extends React.Component {
     faces: [],
     blinkDetected: false,
     blinkedimage: null,
-    voiceResult: '',
     phoneNumber: '',
     musicLink: '',
     videoLink: '',
@@ -53,45 +43,6 @@ export default class VisionDisable extends React.Component {
 
   sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
 
-  veryIntensiveTask = async taskDataArguments => {
-    // Example of an infinite loop task
-    const {delay} = taskDataArguments;
-    await new Promise(async resolve => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(this.state.voiceResult);
-        await this.sleep(delay);
-      }
-    });
-  };
-
-  options = {
-    taskName: 'Example',
-    taskTitle: 'Touchless',
-    taskDesc: 'Voice Recording',
-    taskIcon: {
-      name: 'ic_launcher',
-      type: 'mipmap',
-    },
-    color: '#ff00ff',
-    linkingURI: 'yourSchemeHere://chat/jane', // See Deep Linking for more info
-    parameters: {
-      delay: 2000,
-    },
-  };
-
-  backgroundServiceStart = async () => {
-    await BackgroundService.start(this.veryIntensiveTask, this.options);
-  };
-
-  /*b = async () => {
-    await BackgroundService.updateNotification({
-      taskDesc: 'Voice Recording',
-    });
-  };
-
-  c = async () => {
-    await BackgroundService.stop();
-  };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
   UNSAFE_componentWillMount = async () => {
     if (Platform.OS == 'android') {
@@ -117,70 +68,10 @@ export default class VisionDisable extends React.Component {
         musicLink: returnMusicData && returnMusicData[0]?.param,
       });
     }
-    Voice.onSpeechStart = this.onSpeechStartHandler;
-    Voice.onSpeechEnd = this.onSpeechEndHandler;
-    Voice.onSpeechResults = this.onSpeechResultsHandler;
-    this.startRecording();
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
   };
 
   BackStuff = () => {
     // console.log('back button pressed');
-  };
-
-  onSpeechStartHandler = e => {
-    console.log('start handler==>>>', e);
-    this.backgroundServiceStart();
-  };
-
-  onSpeechEndHandler = e => {
-    //  TODO: stop ihtiyacım olursa diye tutuyorum simdilik
-  };
-
-  onSpeechResultsHandler = e => {
-    let text = e.value[0];
-    this.setState({
-      voiceResult: text,
-    });
-    console.log('speech result handler', e);
-    console.log(text);
-    if (text.includes('call')) {
-      this.callAnyone();
-    } else if (text.includes('music') || text.includes('spotify')) {
-      this.openSpotify();
-    } else if (text.includes('youtube') || text.includes('video')) {
-      this.openYoutube();
-    } else if (text.includes('sms') || text.includes('message')) {
-      this.sendSms();
-    } else if (text.includes('calendar') || text.includes('save')) {
-      this.setEventToCalender();
-    } else if (
-      text.includes('turn') ||
-      text.includes('back') ||
-      text.includes('touchless')
-    ) {
-      // bu kısım geliştirilecek
-      this.turnBackToApp();
-    }
-    this.startRecording();
-  };
-
-  startRecording = async () => {
-    try {
-      await Voice.start('en-Us');
-    } catch (error) {
-      console.log('error raised', error);
-    }
-  };
-
-  stopRecording = async () => {
-    try {
-      // await Voice.stop();
-    } catch (error) {
-      console.log('error raised', error);
-    }
   };
 
   toggleFacing() {
@@ -320,11 +211,6 @@ export default class VisionDisable extends React.Component {
 
   openYoutube = async function () {
     Linking.openURL(this.state.videoLink);
-  };
-
-  turnBackToApp = async function () {
-    // TODO: bunu araştırıp app'e dönmesini sağlıycam
-    Linking.openURL('Touchless');
   };
 
   setEventToCalender = async function () {
