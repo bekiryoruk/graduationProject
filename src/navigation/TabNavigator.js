@@ -151,6 +151,7 @@ function TabNavigator() {
         options={{
           tabBarButton: () => null,
           tabBarVisible: true, //hide tab bar on this screen
+          unmountOnBlur: true,
         }}
       />
     </Tab.Navigator>

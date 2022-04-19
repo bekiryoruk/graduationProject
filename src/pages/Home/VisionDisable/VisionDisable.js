@@ -1,19 +1,10 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Dimensions,
-  Linking,
-} from 'react-native';
+import {Text, View, TouchableOpacity, Dimensions, Linking} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import RNCalendarEvents from 'react-native-calendar-events';
-import Voice from '@react-native-community/voice';
-import BackgroundService from 'react-native-background-actions';
 
 import styles from './VisionDisable.styles';
-import {callPhone, sendSMS} from '../../../helpers';
+import {callPhone, sendSMS, getItem} from '../../../helpers';
 import {BackPressHandler} from '../../../components';
 const landmarkSize = 10; // NOTE: bunu değiştirirsen style dosyasından da değişiklik yap, * landmark *
 export default class VisionDisable extends React.Component {
@@ -45,119 +36,42 @@ export default class VisionDisable extends React.Component {
     faces: [],
     blinkDetected: false,
     blinkedimage: null,
-    voiceResult: '',
+    phoneNumber: '',
+    musicLink: '',
+    videoLink: '',
   };
 
   sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
 
-  veryIntensiveTask = async taskDataArguments => {
-    // Example of an infinite loop task
-    const {delay} = taskDataArguments;
-    await new Promise(async resolve => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(this.state.voiceResult);
-        await this.sleep(delay);
-      }
-    });
-  };
-
-  options = {
-    taskName: 'Example',
-    taskTitle: 'Touchless',
-    taskDesc: 'Voice Recording',
-    taskIcon: {
-      name: 'ic_launcher',
-      type: 'mipmap',
-    },
-    color: '#ff00ff',
-    linkingURI: 'yourSchemeHere://chat/jane', // See Deep Linking for more info
-    parameters: {
-      delay: 2000,
-    },
-  };
-
-  backgroundServiceStart = async () => {
-    await BackgroundService.start(this.veryIntensiveTask, this.options);
-  };
-
-  /*b = async () => {
-    await BackgroundService.updateNotification({
-      taskDesc: 'Voice Recording',
-    });
-  };
-
-  c = async () => {
-    await BackgroundService.stop();
-  };*/
   // TODO: bu kısım uyarı veriyor bu kısıma dönücem
-  UNSAFE_componentWillMount = () => {
+  UNSAFE_componentWillMount = async () => {
     if (Platform.OS == 'android') {
       BackPressHandler(this.BackStuff);
     }
-    Voice.onSpeechStart = this.onSpeechStartHandler;
-    Voice.onSpeechEnd = this.onSpeechEndHandler;
-    Voice.onSpeechResults = this.onSpeechResultsHandler;
-    this.startRecording();
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
+    const returnContactData = await getItem('Contact');
+    if (returnContactData !== null && returnContactData !== undefined) {
+      this.setState({
+        phoneNumber: returnContactData && returnContactData[0]?.param,
+      });
+    }
+
+    const returnVideoData = await getItem('Video');
+    if (returnVideoData !== null && returnVideoData !== undefined) {
+      this.setState({
+        videoLink: returnVideoData && returnVideoData[0]?.param,
+      });
+    }
+
+    const returnMusicData = await getItem('Music');
+    if (returnMusicData !== null && returnMusicData !== undefined) {
+      this.setState({
+        musicLink: returnMusicData && returnMusicData[0]?.param,
+      });
+    }
   };
 
   BackStuff = () => {
     // console.log('back button pressed');
-  };
-
-  onSpeechStartHandler = e => {
-    console.log('start handler==>>>', e);
-    this.backgroundServiceStart();
-  };
-
-  onSpeechEndHandler = e => {
-    //  TODO: stop ihtiyacım olursa diye tutuyorum simdilik
-  };
-
-  onSpeechResultsHandler = e => {
-    let text = e.value[0];
-    this.setState({
-      voiceResult: text,
-    });
-    console.log('speech result handler', e);
-    console.log(text);
-    if (text.includes('call')) {
-      this.callAnyone();
-    } else if (text.includes('music') || text.includes('spotify')) {
-      this.openSpotify();
-    } else if (text.includes('youtube') || text.includes('video')) {
-      this.openYoutube();
-    } else if (text.includes('sms') || text.includes('message')) {
-      this.sendSms();
-    } else if (text.includes('calendar') || text.includes('save')) {
-      this.setEventToCalender();
-    } else if (
-      text.includes('turn') ||
-      text.includes('back') ||
-      text.includes('touchless')
-    ) {
-      // bu kısım geliştirilecek
-      this.turnBackToApp();
-    }
-    this.startRecording();
-  };
-
-  startRecording = async () => {
-    try {
-      await Voice.start('en-Us');
-    } catch (error) {
-      console.log('error raised', error);
-    }
-  };
-
-  stopRecording = async () => {
-    try {
-      // await Voice.stop();
-    } catch (error) {
-      console.log('error raised', error);
-    }
   };
 
   toggleFacing() {
@@ -279,11 +193,11 @@ export default class VisionDisable extends React.Component {
   }
 
   callAnyone = async function () {
-    callPhone('+905436083152');
+    callPhone(this.state.phoneNumber);
   };
 
   sendSms = async function () {
-    sendSMS(['+905436083152'], 'selam');
+    sendSMS([this.state.phoneNumber], 'selam');
     /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
     const mobile = '+905345242175';
     let url =
@@ -292,18 +206,11 @@ export default class VisionDisable extends React.Component {
   };
 
   openSpotify = async function () {
-    Linking.openURL(
-      'https://open.spotify.com/playlist/37i9dQZF1E4yMk2wN0k5C4?si=57ce9467c865431d',
-    );
+    Linking.openURL(this.state.musicLink);
   };
 
   openYoutube = async function () {
-    Linking.openURL('https://www.youtube.com/watch?v=E4Ytu27vRho');
-  };
-
-  turnBackToApp = async function () {
-    // TODO: bunu araştırıp app'e dönmesini sağlıycam
-    Linking.openURL('Touchless');
+    Linking.openURL(this.state.videoLink);
   };
 
   setEventToCalender = async function () {
