@@ -10,7 +10,7 @@ import RNCalendarEvents from 'react-native-calendar-events';
 import Voice from '@react-native-community/voice';
 import BackgroundService from 'react-native-background-actions';
 
-import styles from './VoiceDisable.styles';
+import styles from './VisionDisable.styles';
 import {callPhone, sendSMS} from '../../../helpers';
 import {BackPressHandler} from '../../../components';
 import IconButton from '../../../../src/navigation/IconButton';
