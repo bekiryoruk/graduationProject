@@ -3,13 +3,16 @@ import {View, Text, Keyboard, Button, Image} from 'react-native';
 import {CustomTextInput} from '../../../components';
 import {getItem} from '../../../helpers';
 import styles from './ThirdModal.styles';
+import {storeItem} from '../../../helpers/storage';
 const ThirdModal = ({navigation}) => {
   const [contactName, setContactName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const goToNextStep = type => {
-    navigation.navigate('FourthModal');
+    storeItem(contactNumber, 'Contact').then(() => {
+      navigation.navigate('FourthModal');
+    });
   };
 
   const skipForNow = type => {
@@ -60,7 +63,7 @@ const ThirdModal = ({navigation}) => {
         <CustomTextInput
           onChange={e => setContactNumber(e)}
           value={contactNumber}
-          placeholder={'Enter your contact name'}
+          placeholder={'Enter your contact number'}
         />
       </View>
       {!isKeyboardVisible ? (
