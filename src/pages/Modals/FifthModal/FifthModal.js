@@ -1,26 +1,47 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Button, Keyboard, Image} from 'react-native';
+import {View, Text, Button, Keyboard, Image, Alert} from 'react-native';
+
 import {CustomTextInput} from '../../../components';
-import {getItem} from '../../../helpers';
+import {storeItem} from '../../../helpers';
+
 import styles from './FifthModal.styles';
+
 const FifthModal = ({navigation}) => {
   const [musicName, setMusicName] = useState('');
   const [musicLink, setMusicLink] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const goToNextStep = type => {
+
+  const storeNewItem = async () => {
+    if (
+      (musicName && musicName.length === 0) ||
+      (musicLink && musicLink.length === 0) ||
+      !musicName ||
+      !musicLink
+    ) {
+      Alert.alert('Please enter valid input!');
+      return false;
+    } else {
+      const newItems = [{name: musicName, param: musicLink}];
+      storeItem(newItems, 'Music');
+      return true;
+    }
+  };
+
+  const goToNextStep = () => {
+    storeNewItem().then(res => {
+      res && navigation.navigate('Settings');
+    });
+  };
+
+  const skipForNow = () => {
     navigation.navigate('Settings');
   };
 
-  const skipForNow = type => {
-    navigation.navigate('Settings');
-  };
-
-  const goToBackStep = type => {
+  const goToBackStep = () => {
     navigation.navigate('FourthModal');
   };
 
   useEffect(() => {
-    const userType = getItem('userType').then(data => {});
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {

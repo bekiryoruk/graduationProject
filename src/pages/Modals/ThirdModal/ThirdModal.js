@@ -1,30 +1,47 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Keyboard, Button, Image} from 'react-native';
+import {View, Text, Keyboard, Button, Image, Alert} from 'react-native';
+
 import {CustomTextInput} from '../../../components';
-import {getItem} from '../../../helpers';
+import {storeItem} from '../../../helpers';
+
 import styles from './ThirdModal.styles';
-import {storeItem} from '../../../helpers/storage';
+
 const ThirdModal = ({navigation}) => {
   const [contactName, setContactName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-  const goToNextStep = type => {
-    storeItem(contactNumber, 'Contact').then(() => {
-      navigation.navigate('FourthModal');
+  const storeNewItem = async () => {
+    if (
+      (contactName && contactName.length === 0) ||
+      (contactNumber && contactNumber.length === 0) ||
+      !contactName ||
+      !contactNumber
+    ) {
+      Alert.alert('Please enter valid input!');
+      return false;
+    } else {
+      const newItems = [{name: contactName, param: contactNumber}];
+      storeItem(newItems, 'Contact');
+      return true;
+    }
+  };
+
+  const goToNextStep = () => {
+    storeNewItem().then(res => {
+      res && navigation.navigate('FourthModal');
     });
   };
 
-  const skipForNow = type => {
+  const skipForNow = () => {
     navigation.navigate('Settings');
   };
 
-  const goToBackStep = type => {
+  const goToBackStep = () => {
     navigation.navigate('SecondModal');
   };
 
   useEffect(() => {
-    const userType = getItem('userType').then(data => {});
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
