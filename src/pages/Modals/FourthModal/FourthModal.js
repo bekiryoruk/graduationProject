@@ -1,26 +1,47 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Button, Keyboard, Image} from 'react-native';
+import {View, Text, Button, Keyboard, Image, Alert} from 'react-native';
+
 import {CustomTextInput} from '../../../components';
-import {getItem} from '../../../helpers';
+import {storeItem} from '../../../helpers';
+
 import styles from './FourthModal.styles';
+
 const FourthModal = ({navigation}) => {
   const [videoName, setVideoName] = useState('');
   const [videoLink, setVideoLink] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const goToNextStep = type => {
-    navigation.navigate('FifthModal');
+
+  const storeNewItem = async () => {
+    if (
+      (videoName && videoName.length === 0) ||
+      (videoLink && videoLink.length === 0) ||
+      !videoName ||
+      !videoLink
+    ) {
+      Alert.alert('Please enter valid input!');
+      return false;
+    } else {
+      const newItems = [{name: videoName, param: videoLink}];
+      storeItem(newItems, 'Video');
+      return true;
+    }
   };
 
-  const skipForNow = type => {
+  const goToNextStep = () => {
+    storeNewItem().then(res => {
+      res && navigation.navigate('FifthModal');
+    });
+  };
+
+  const skipForNow = () => {
     navigation.navigate('Settings');
   };
 
-  const goToBackStep = type => {
+  const goToBackStep = () => {
     navigation.navigate('ThirdModal');
   };
 
   useEffect(() => {
-    const userType = getItem('userType').then(data => {});
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
