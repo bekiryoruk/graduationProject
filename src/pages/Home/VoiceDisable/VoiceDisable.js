@@ -156,10 +156,7 @@ export default class VoiceDisable extends React.Component {
             this.state.buttonsHover === 'callButton'
               ? styles.selectedButton
               : styles.flipButton,
-            this.state.buttonsHover === 'callButton'
-              ? styles.selectedPicButton
-              : styles.picButton,
-            {flex: 0.24, alignSelf: 'flex-end'},
+            styles.button,
           ]}
           onPress={this.callAnyone.bind(this)}>
           <Text style={styles.flipText}> CALL </Text>
@@ -169,10 +166,7 @@ export default class VoiceDisable extends React.Component {
             this.state.buttonsHover === 'smsButton'
               ? styles.selectedButton
               : styles.flipButton,
-            this.state.buttonsHover === 'smsButton'
-              ? styles.selectedPicButton
-              : styles.picButton,
-            {flex: 0.24, alignSelf: 'flex-end'},
+            styles.button,
           ]}
           onPress={this.sendSms.bind(this)}>
           <Text style={styles.flipText}> SMS </Text>
@@ -182,10 +176,7 @@ export default class VoiceDisable extends React.Component {
             this.state.buttonsHover === 'musicButton'
               ? styles.selectedButton
               : styles.flipButton,
-            this.state.buttonsHover === 'musicButton'
-              ? styles.selectedPicButton
-              : styles.picButton,
-            {flex: 0.24, alignSelf: 'flex-end'},
+            styles.button,
           ]}
           onPress={this.openSpotify.bind(this)}>
           <Text style={styles.flipText}> MUSIC </Text>
@@ -195,10 +186,7 @@ export default class VoiceDisable extends React.Component {
             this.state.buttonsHover === 'videoButton'
               ? styles.selectedButton
               : styles.flipButton,
-            this.state.buttonsHover === 'videoButton'
-              ? styles.selectedPicButton
-              : styles.picButton,
-            {flex: 0.24, alignSelf: 'flex-end'},
+            styles.button,
           ]}
           onPress={this.openYoutube.bind(this)}>
           <Text style={styles.flipText}> VIDEO </Text>

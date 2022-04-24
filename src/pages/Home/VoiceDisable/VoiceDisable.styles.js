@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: '#000',
   },
+  button: {flex: 0.24, alignSelf: 'flex-end'},
   flipButton: {
     flex: 0.2,
     height: 40,
@@ -20,6 +21,7 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   selectedButton: {
     flex: 0.2,
@@ -35,11 +37,6 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  picButton: {
-    backgroundColor: 'white',
-  },
-  selectedPicButton: {
     backgroundColor: '#aaa',
   },
   facesContainer: {
