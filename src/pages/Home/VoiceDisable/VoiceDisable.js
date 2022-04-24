@@ -79,29 +79,26 @@ export default class VoiceDisable extends React.Component {
     const rightEye = faces[0].rightEyeOpenProbability;
     const leftEye = faces[0].leftEyeOpenProbability;
     const bothEyes = (rightEye + leftEye) / 2;
+    let buttonType = '';
     if (faces[0].leftEyePosition.x < 200) {
-      this.setState({
-        buttonsHover: 'callButton',
-      });
+      buttonType = 'callButton';
     } else if (
       faces[0].leftEyePosition.x > 200 &&
       faces[0].leftEyePosition.x < 300
     ) {
-      this.setState({
-        buttonsHover: 'smsButton',
-      });
+      buttonType = 'smsButton';
     } else if (
       faces[0].leftEyePosition.x > 300 &&
       faces[0].leftEyePosition.x < 390
     ) {
-      this.setState({
-        buttonsHover: 'musicButton',
-      });
+      buttonType = 'musicButton';
     } else {
-      this.setState({
-        buttonsHover: 'videoButton',
-      });
+      buttonType = 'videoButton';
     }
+
+    this.setState({
+      buttonsHover: buttonType,
+    });
 
     if (bothEyes <= 0.3) {
       console.log(
@@ -153,67 +150,59 @@ export default class VoiceDisable extends React.Component {
 
   renderActionButtons() {
     return (
-      <View style={{bottom: 0}}>
-        <View
-          style={{
-            height: 56,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-            alignSelf: 'flex-end',
-          }}>
-          <TouchableOpacity
-            style={[
-              this.state.buttonsHover === 'callButton'
-                ? styles.selectedButton
-                : styles.flipButton,
-              this.state.buttonsHover === 'callButton'
-                ? styles.selectedPicButton
-                : styles.picButton,
-              {flex: 0.24, alignSelf: 'flex-end'},
-            ]}
-            onPress={this.callAnyone.bind(this)}>
-            <Text style={styles.flipText}> CALL </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              this.state.buttonsHover === 'smsButton'
-                ? styles.selectedButton
-                : styles.flipButton,
-              this.state.buttonsHover === 'smsButton'
-                ? styles.selectedPicButton
-                : styles.picButton,
-              {flex: 0.24, alignSelf: 'flex-end'},
-            ]}
-            onPress={this.sendSms.bind(this)}>
-            <Text style={styles.flipText}> SMS </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              this.state.buttonsHover === 'musicButton'
-                ? styles.selectedButton
-                : styles.flipButton,
-              this.state.buttonsHover === 'musicButton'
-                ? styles.selectedPicButton
-                : styles.picButton,
-              {flex: 0.24, alignSelf: 'flex-end'},
-            ]}
-            onPress={this.openSpotify.bind(this)}>
-            <Text style={styles.flipText}> MUSIC </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              this.state.buttonsHover === 'videoButton'
-                ? styles.selectedButton
-                : styles.flipButton,
-              this.state.buttonsHover === 'videoButton'
-                ? styles.selectedPicButton
-                : styles.picButton,
-              {flex: 0.24, alignSelf: 'flex-end'},
-            ]}
-            onPress={this.openYoutube.bind(this)}>
-            <Text style={styles.flipText}> VIDEO </Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'callButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            this.state.buttonsHover === 'callButton'
+              ? styles.selectedPicButton
+              : styles.picButton,
+            {flex: 0.24, alignSelf: 'flex-end'},
+          ]}
+          onPress={this.callAnyone.bind(this)}>
+          <Text style={styles.flipText}> CALL </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'smsButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            this.state.buttonsHover === 'smsButton'
+              ? styles.selectedPicButton
+              : styles.picButton,
+            {flex: 0.24, alignSelf: 'flex-end'},
+          ]}
+          onPress={this.sendSms.bind(this)}>
+          <Text style={styles.flipText}> SMS </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'musicButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            this.state.buttonsHover === 'musicButton'
+              ? styles.selectedPicButton
+              : styles.picButton,
+            {flex: 0.24, alignSelf: 'flex-end'},
+          ]}
+          onPress={this.openSpotify.bind(this)}>
+          <Text style={styles.flipText}> MUSIC </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'videoButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            this.state.buttonsHover === 'videoButton'
+              ? styles.selectedPicButton
+              : styles.picButton,
+            {flex: 0.24, alignSelf: 'flex-end'},
+          ]}
+          onPress={this.openYoutube.bind(this)}>
+          <Text style={styles.flipText}> VIDEO </Text>
+        </TouchableOpacity>
       </View>
     );
   }
