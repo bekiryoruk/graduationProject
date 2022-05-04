@@ -11,10 +11,13 @@ export default class VoiceDisable extends React.Component {
     canDetectFaces: false,
     buttonsHover: 'callButton',
     faces: [],
-    blinkDetected: false,
-    phoneNumber: '',
-    musicLink: '',
-    videoLink: '',
+    phoneNumbers: null,
+    musicLinks: null,
+    videoLinks: null,
+    itemCount: 0,
+    listItemIndex: 0,
+    actionSelected: false,
+    positionY: 0,
   };
 
   UNSAFE_componentWillMount = async () => {
@@ -24,21 +27,21 @@ export default class VoiceDisable extends React.Component {
     const returnContactData = await getItem('Contact');
     if (returnContactData !== null && returnContactData !== undefined) {
       this.setState({
-        phoneNumber: returnContactData && returnContactData[0]?.param,
+        phoneNumbers: returnContactData && returnContactData,
       });
     }
 
     const returnVideoData = await getItem('Video');
     if (returnVideoData !== null && returnVideoData !== undefined) {
       this.setState({
-        videoLink: returnVideoData && returnVideoData[0]?.param,
+        videoLinks: returnVideoData && returnVideoData,
       });
     }
 
     const returnMusicData = await getItem('Music');
     if (returnMusicData !== null && returnMusicData !== undefined) {
       this.setState({
-        musicLink: returnMusicData && returnMusicData[0]?.param,
+        musicLinks: returnMusicData && returnMusicData,
       });
     }
   };
@@ -48,22 +51,30 @@ export default class VoiceDisable extends React.Component {
   };
 
   callAnyone = async function () {
-    callPhone(this.state.phoneNumber);
+    callPhone(this.state.phoneNumbers);
   };
 
   sendSms = async function () {
-    sendSMS([this.state.phoneNumber], 'selam');
+    sendSMS([this.state.phoneNumbers], 'selam');
   };
 
   openSpotify = async function () {
-    Linking.openURL(this.state.musicLink);
+    Linking.openURL(this.state.musicLinks);
   };
 
   openYoutube = async function () {
-    Linking.openURL(this.state.videoLink);
+    Linking.openURL(this.state.videoLinks);
   };
 
   takeAction = () => {
+    console.log('action button triggered');
+    this.setState({
+      buttonsHover: '',
+      actionSelected: false,
+      itemCount: 0,
+    });
+    return;
+    /*
     if (this.state.buttonsHover === 'callButton') {
       this.callAnyone();
     } else if (this.state.buttonsHover === 'smsButton') {
@@ -73,47 +84,74 @@ export default class VoiceDisable extends React.Component {
     } else {
       this.openYoutube();
     }
-  };
+    */
+  };;
 
   facesDetected = ({faces}) => {
     const rightEye = faces[0].rightEyeOpenProbability;
     const leftEye = faces[0].leftEyeOpenProbability;
     const bothEyes = (rightEye + leftEye) / 2;
     let buttonType = '';
-    if (faces[0].leftEyePosition.x < 200) {
-      buttonType = 'callButton';
-    } else if (
-      faces[0].leftEyePosition.x > 200 &&
-      faces[0].leftEyePosition.x < 300
-    ) {
-      buttonType = 'smsButton';
-    } else if (
-      faces[0].leftEyePosition.x > 300 &&
-      faces[0].leftEyePosition.x < 390
-    ) {
-      buttonType = 'musicButton';
+    let countOfItem = 0;
+    if (!this.state.actionSelected) {
+      if (faces[0].leftEyePosition.x < 200) {
+        buttonType = 'callButton';
+        countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
+      } else if (
+        faces[0].leftEyePosition.x > 200 &&
+        faces[0].leftEyePosition.x < 300
+      ) {
+        buttonType = 'smsButton';
+        countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
+      } else if (
+        faces[0].leftEyePosition.x > 300 &&
+        faces[0].leftEyePosition.x < 390
+      ) {
+        buttonType = 'musicButton';
+        countOfItem = this.state.musicLinks && this.state.musicLinks.length;
+      } else {
+        buttonType = 'videoButton';
+        countOfItem = this.state.videoLinks && this.state.videoLinks.length;
+      }
+
+      this.setState({
+        buttonsHover: buttonType,
+      });
+
+      if (bothEyes <= 0.3) {
+        this.setState({
+          actionSelected: true,
+          itemCount: countOfItem || 0,
+        });
+      }
     } else {
-      buttonType = 'videoButton';
+      console.log('---------------------------------------------');
+      const realDiff = faces[0].leftEyePosition.y - this.state.positionY;
+
+      if (realDiff <= 1.2 && realDiff >= 0.2) {
+        const count = this.state.itemCount;
+        const itemIndex = this.state.listItemIndex;
+        const difference = Math.floor((realDiff * 10) / count);
+
+        if (this.state.itemCount > 0) {
+          const res = (itemIndex + difference) % count;
+          this.setState({
+            listItemIndex: res >= 0 ? res : res * -1,
+          });
+          console.log('updated - item - index: ', this.state.listItemIndex);
+        }
+      }
+
+      this.setState({
+        positionY: faces[0].leftEyePosition.y,
+      });
+
+      if (bothEyes <= 0.3) {
+        console.log('action triggered! ', this.state.listItemIndex);
+        // this.takeAction();
+      }
     }
 
-    this.setState({
-      buttonsHover: buttonType,
-    });
-
-    if (bothEyes <= 0.3) {
-      console.log(
-        JSON.stringify({
-          blinkDetected: 'blinkDetected',
-          rightEyeOpenProbability: rightEye,
-          leftEyeOpenProbability: leftEye,
-        }),
-      );
-      this.setState({blinkDetected: true});
-      this.takeAction();
-    }
-    if (this.state.blinkDetected && bothEyes >= 0.9) {
-      this.setState({blinkDetected: false});
-    }
     this.setState({faces});
   };
 
@@ -147,6 +185,49 @@ export default class VoiceDisable extends React.Component {
       {this.state.faces.map(this.renderLandmarksOfFace)}
     </View>
   );
+
+  renderItemList() {
+    const itemList =
+      this.state.buttonsHover === 'callButton' ||
+      this.state.buttonsHover === 'smsButton'
+        ? this.state.phoneNumbers
+        : this.state.buttonsHover === 'musicButton'
+        ? this.state.musicLinks
+        : this.state.videoLinks;
+
+    return (
+      <View style={styles.itemList}>
+        <TouchableOpacity
+          style={styles.itemButtonOff}
+          onPress={() =>
+            this.setState({
+              buttonsHover: '',
+              actionSelected: false,
+              itemCount: 0,
+            })
+          }>
+          <Text style={{color: 'red'}}> CLOSE THIS TAB </Text>
+        </TouchableOpacity>
+        {itemList &&
+          itemList.map((item, index) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.button,
+                  styles.itemButton,
+                  this.state.listItemIndex === index
+                    ? styles.itemButtonOn
+                    : styles.itemButtonOff,
+                ]}
+                onPress={() => console.log(item)}>
+                <Text> {item.name} </Text>
+              </TouchableOpacity>
+            );
+          })}
+      </View>
+    );
+  }
 
   renderActionButtons() {
     return (
@@ -239,7 +320,8 @@ export default class VoiceDisable extends React.Component {
             backgroundColor: 'transparent',
           }}></View>
 
-        {this.renderActionButtons()}
+        {!this.state.actionSelected && this.renderActionButtons()}
+        {this.state.actionSelected && this.renderItemList()}
         {this.renderFaces()}
         {canDetectFaces && this.renderLandmarks()}
       </RNCamera>
