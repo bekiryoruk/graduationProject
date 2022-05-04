@@ -58,31 +58,67 @@ export default class VoiceDisable extends React.Component {
     sendSMS([this.state.phoneNumbers[index].param], 'selam');
   };
 
-  openSpotify = async function (index) {
-    Linking.openURL(this.state.musicLinks[index].param);
-  };
-
-  openYoutube = async function (index) {
-    Linking.openURL(this.state.videoLinks[index].param);
-  };
-
-  takeAction = index => {
-    console.log('action button triggered');
-
-    if (this.state.buttonsHover === 'callButton') {
-      this.callAnyone(index);
-    } else if (this.state.buttonsHover === 'smsButton') {
-      this.sendSms(index);
-    } else if (this.state.buttonsHover === 'musicButton') {
-      this.openSpotify(index);
-    } else {
-      this.openYoutube(index);
-    }
+  closeTab = () => {
     this.setState({
       buttonsHover: 'callButton',
       actionSelected: false,
       itemCount: 1,
+      listItemIndex: 0,
     });
+  };
+
+  // TODO: show a toast message to user
+  openSpotify = async function (index) {
+    Linking.openURL(this.state.musicLinks[index].param).catch(err => {
+      console.log(
+        'Error: Could not open URL: ',
+        this.state.musicLinks[index].param,
+      );
+    });
+  };
+
+  // TODO: show a toast message to user
+  openYoutube = async function (index) {
+    Linking.openURL(this.state.videoLinks[index].param).catch(err => {
+      console.log(
+        'Error: Could not open URL: ',
+        this.state.videoLinks[index].param,
+      );
+    });
+  };
+
+  takeAction = index => {
+    console.log('action button triggered');
+    if (index === 0) {
+      this.closeTab();
+    } else {
+      const functionIndex = index - 1;
+      if (
+        this.state.buttonsHover === 'callButton' &&
+        this.state.phoneNumbers &&
+        this.state.phoneNumbers[functionIndex]
+      ) {
+        this.callAnyone(functionIndex);
+      } else if (
+        this.state.buttonsHover === 'smsButton' &&
+        this.state.phoneNumbers &&
+        this.state.phoneNumbers[functionIndex]
+      ) {
+        this.sendSms(functionIndex);
+      } else if (
+        this.state.buttonsHover === 'musicButton' &&
+        this.state.musicLinks &&
+        this.state.musicLinks[functionIndex]
+      ) {
+        this.openSpotify(functionIndex);
+      } else if (
+        this.state.videoLinks &&
+        this.state.videoLinks[functionIndex]
+      ) {
+        this.openYoutube(functionIndex);
+      }
+      this.closeTab();
+    }
   };
 
   facesDetected = ({faces}) => {
@@ -116,7 +152,7 @@ export default class VoiceDisable extends React.Component {
         buttonsHover: buttonType,
       });
 
-      if (bothEyes <= 0.3) {
+      if (bothEyes <= 0.2) {
         this.setState({
           actionSelected: true,
           itemCount: countOfItem + 1 || 1,
@@ -125,15 +161,18 @@ export default class VoiceDisable extends React.Component {
     } else {
       const realDiff = faces[0].leftEyePosition.y - this.state.positionY;
 
-      if (realDiff <= 1.2 && realDiff >= 0.2) {
+      if (
+        (realDiff <= 1.2 && realDiff >= 0.2) ||
+        (realDiff >= -1.2 && realDiff <= -0.2)
+      ) {
         const count = this.state.itemCount;
-        const itemIndex = this.state.listItemIndex;
+        const oldIndex = this.state.listItemIndex;
         const difference = Math.floor((realDiff * 10) / count);
 
         if (this.state.itemCount > 0) {
-          const res = (itemIndex + difference) % count;
+          const res = (oldIndex + difference) % count;
           this.setState({
-            listItemIndex: res >= 0 ? res : res * -1,
+            listItemIndex: res >= 0 ? res : oldIndex + count - res,
           });
         }
       }
@@ -142,8 +181,8 @@ export default class VoiceDisable extends React.Component {
         positionY: faces[0].leftEyePosition.y,
       });
 
-      if (bothEyes <= 0.3) {
-        this.takeAction(this.state.listItemIndex - 1);
+      if (bothEyes <= 0.2) {
+        this.takeAction(this.state.listItemIndex);
       }
     }
 
@@ -200,13 +239,7 @@ export default class VoiceDisable extends React.Component {
               ? styles.itemButtonOn
               : styles.itemButtonOff,
           ]}
-          onPress={() =>
-            this.setState({
-              buttonsHover: '',
-              actionSelected: false,
-              itemCount: 1,
-            })
-          }>
+          onPress={this.closeTab.bind(this)}>
           <Text style={{color: 'red'}}> CLOSE THIS TAB </Text>
         </TouchableOpacity>
         {itemList &&
