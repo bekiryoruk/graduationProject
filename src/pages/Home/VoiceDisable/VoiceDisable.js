@@ -14,7 +14,7 @@ export default class VoiceDisable extends React.Component {
     phoneNumbers: null,
     musicLinks: null,
     videoLinks: null,
-    itemCount: 0,
+    itemCount: 1,
     listItemIndex: 0,
     actionSelected: false,
     positionY: 0,
@@ -50,42 +50,40 @@ export default class VoiceDisable extends React.Component {
     // console.log('back button pressed');
   };
 
-  callAnyone = async function () {
-    callPhone(this.state.phoneNumbers);
+  callAnyone = async function (index) {
+    callPhone(this.state.phoneNumbers[index].param);
   };
 
-  sendSms = async function () {
-    sendSMS([this.state.phoneNumbers], 'selam');
+  sendSms = async function (index) {
+    sendSMS([this.state.phoneNumbers[index].param], 'selam');
   };
 
-  openSpotify = async function () {
-    Linking.openURL(this.state.musicLinks);
+  openSpotify = async function (index) {
+    Linking.openURL(this.state.musicLinks[index].param);
   };
 
-  openYoutube = async function () {
-    Linking.openURL(this.state.videoLinks);
+  openYoutube = async function (index) {
+    Linking.openURL(this.state.videoLinks[index].param);
   };
 
-  takeAction = () => {
+  takeAction = index => {
     console.log('action button triggered');
-    this.setState({
-      buttonsHover: '',
-      actionSelected: false,
-      itemCount: 0,
-    });
-    return;
-    /*
+
     if (this.state.buttonsHover === 'callButton') {
-      this.callAnyone();
+      this.callAnyone(index);
     } else if (this.state.buttonsHover === 'smsButton') {
-      this.sendSms();
+      this.sendSms(index);
     } else if (this.state.buttonsHover === 'musicButton') {
-      this.openSpotify();
+      this.openSpotify(index);
     } else {
-      this.openYoutube();
+      this.openYoutube(index);
     }
-    */
-  };;
+    this.setState({
+      buttonsHover: 'callButton',
+      actionSelected: false,
+      itemCount: 1,
+    });
+  };
 
   facesDetected = ({faces}) => {
     const rightEye = faces[0].rightEyeOpenProbability;
@@ -121,11 +119,10 @@ export default class VoiceDisable extends React.Component {
       if (bothEyes <= 0.3) {
         this.setState({
           actionSelected: true,
-          itemCount: countOfItem || 0,
+          itemCount: countOfItem + 1 || 1,
         });
       }
     } else {
-      console.log('---------------------------------------------');
       const realDiff = faces[0].leftEyePosition.y - this.state.positionY;
 
       if (realDiff <= 1.2 && realDiff >= 0.2) {
@@ -138,7 +135,6 @@ export default class VoiceDisable extends React.Component {
           this.setState({
             listItemIndex: res >= 0 ? res : res * -1,
           });
-          console.log('updated - item - index: ', this.state.listItemIndex);
         }
       }
 
@@ -147,8 +143,7 @@ export default class VoiceDisable extends React.Component {
       });
 
       if (bothEyes <= 0.3) {
-        console.log('action triggered! ', this.state.listItemIndex);
-        // this.takeAction();
+        this.takeAction(this.state.listItemIndex - 1);
       }
     }
 
@@ -198,12 +193,18 @@ export default class VoiceDisable extends React.Component {
     return (
       <View style={styles.itemList}>
         <TouchableOpacity
-          style={styles.itemButtonOff}
+          style={[
+            styles.button,
+            styles.itemButton,
+            this.state.listItemIndex === 0
+              ? styles.itemButtonOn
+              : styles.itemButtonOff,
+          ]}
           onPress={() =>
             this.setState({
               buttonsHover: '',
               actionSelected: false,
-              itemCount: 0,
+              itemCount: 1,
             })
           }>
           <Text style={{color: 'red'}}> CLOSE THIS TAB </Text>
@@ -216,7 +217,7 @@ export default class VoiceDisable extends React.Component {
                 style={[
                   styles.button,
                   styles.itemButton,
-                  this.state.listItemIndex === index
+                  this.state.listItemIndex === index + 1
                     ? styles.itemButtonOn
                     : styles.itemButtonOff,
                 ]}
