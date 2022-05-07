@@ -186,7 +186,7 @@ export default class VoiceDisable extends React.Component {
           let realRes = res;
           if (res < 0) {
             realRes = count - 1;
-          } else if (res > count) {
+          } else if (res > count - 1) {
             realRes = 0;
           }
           this.setState({
@@ -232,10 +232,6 @@ export default class VoiceDisable extends React.Component {
       </View>
     );
   }
-
-  renderFaces = () => (
-    <View style={styles.facesContainer} pointerEvents="none"></View>
-  );
 
   renderLandmarks = () => (
     <View style={styles.facesContainer} pointerEvents="none">
@@ -389,7 +385,6 @@ export default class VoiceDisable extends React.Component {
 
         {!this.state.actionSelected && this.renderActionButtons()}
         {this.state.actionSelected && this.renderItemList()}
-        {this.renderFaces()}
         {canDetectFaces && this.renderLandmarks()}
       </RNCamera>
     );
