@@ -1,5 +1,12 @@
 import React from 'react';
-import {Text, View, TouchableOpacity, Platform, Linking} from 'react-native';
+import {
+  Dimensions,
+  Text,
+  View,
+  TouchableOpacity,
+  Platform,
+  Linking,
+} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 
 import styles from './VoiceDisable.styles';
@@ -9,7 +16,7 @@ const landmarkSize = 10; // NOTE: bunu değiştirirsen style dosyasından da de�
 export default class VoiceDisable extends React.Component {
   state = {
     canDetectFaces: false,
-    buttonsHover: 'callButton',
+    buttonsHover: '',
     faces: [],
     phoneNumbers: null,
     musicLinks: null,
@@ -61,7 +68,7 @@ export default class VoiceDisable extends React.Component {
 
   closeTab = () => {
     this.setState({
-      buttonsHover: 'callButton',
+      buttonsHover: '',
       actionSelected: false,
       itemCount: 1,
       listItemIndex: 0,
@@ -93,7 +100,6 @@ export default class VoiceDisable extends React.Component {
   };
 
   takeAction = index => {
-    console.log('action button triggered');
     if (index === 0) {
       this.closeTab();
     } else {
@@ -126,25 +132,39 @@ export default class VoiceDisable extends React.Component {
     }
   };
 
+  componentDidMount = () => {
+    this.setState({phoneWidth: Dimensions.get('window').width});
+  };
+
   facesDetected = ({faces}) => {
     const rightEye = faces[0].rightEyeOpenProbability;
     const leftEye = faces[0].leftEyeOpenProbability;
     const bothEyes = (rightEye + leftEye) / 2;
     let buttonType = '';
     let countOfItem = 0;
+    const phoneQuarterWidth = this.state.phoneWidth / 4;
+    const distanceBetweenLeftAndRightEyes =
+      faces[0].leftEyePosition.x - faces[0].rightEyePosition.x;
     if (!this.state.actionSelected) {
-      if (faces[0].leftEyePosition.x < 200) {
+      if (
+        faces[0].leftEyePosition.x <
+        distanceBetweenLeftAndRightEyes + phoneQuarterWidth
+      ) {
         buttonType = 'callButton';
         countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
       } else if (
-        faces[0].leftEyePosition.x > 200 &&
-        faces[0].leftEyePosition.x < 300
+        faces[0].leftEyePosition.x >
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth &&
+        faces[0].leftEyePosition.x <
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 2
       ) {
         buttonType = 'smsButton';
         countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
       } else if (
-        faces[0].leftEyePosition.x > 300 &&
-        faces[0].leftEyePosition.x < 390
+        faces[0].leftEyePosition.x >
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 2 &&
+        faces[0].leftEyePosition.x <
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 3
       ) {
         buttonType = 'musicButton';
         countOfItem = this.state.musicLinks && this.state.musicLinks.length;
@@ -182,7 +202,6 @@ export default class VoiceDisable extends React.Component {
         if (this.state.itemCount > 0) {
           const res =
             (oldIndex + difference) % count > 0 ? oldIndex + 1 : oldIndex - 1;
-          console.log(res);
           let realRes = res;
           if (res < 0) {
             realRes = count - 1;
