@@ -180,9 +180,17 @@ export default class VoiceDisable extends React.Component {
         const difference = Math.floor((realDiff * 10) / count);
 
         if (this.state.itemCount > 0) {
-          const res = (oldIndex + difference) % count;
+          const res =
+            (oldIndex + difference) % count > 0 ? oldIndex + 1 : oldIndex - 1;
+          console.log(res);
+          let realRes = res;
+          if (res < 0) {
+            realRes = count - 1;
+          } else if (res > count) {
+            realRes = 0;
+          }
           this.setState({
-            listItemIndex: res >= 0 ? res : oldIndex + count - res,
+            listItemIndex: realRes,
             canRollEye: false,
           });
           setTimeout(() => {
@@ -249,13 +257,15 @@ export default class VoiceDisable extends React.Component {
         <TouchableOpacity
           style={[
             styles.button,
-            styles.itemButton,
             this.state.listItemIndex === 0
               ? styles.itemButtonOn
               : styles.itemButtonOff,
+            {
+              alignItems: 'center',
+            },
           ]}
           onPress={this.closeTab.bind(this)}>
-          <Text style={{color: 'red'}}> CLOSE THIS TAB </Text>
+          <Text style={{color: 'red', fontSize: 14}}> CLOSE THIS TAB </Text>
         </TouchableOpacity>
         {itemList &&
           itemList.map((item, index) => {
@@ -264,13 +274,21 @@ export default class VoiceDisable extends React.Component {
                 key={index}
                 style={[
                   styles.button,
-                  styles.itemButton,
                   this.state.listItemIndex === index + 1
                     ? styles.itemButtonOn
                     : styles.itemButtonOff,
                 ]}
                 onPress={() => console.log(item)}>
-                <Text> {item.name} </Text>
+                <Text
+                  style={{
+                    color:
+                      this.state.listItemIndex === index + 1
+                        ? 'white'
+                        : 'black',
+                    fontSize: 14,
+                  }}>
+                  {item.name.toUpperCase()}
+                </Text>
               </TouchableOpacity>
             );
           })}
