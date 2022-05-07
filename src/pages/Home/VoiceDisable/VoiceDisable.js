@@ -240,16 +240,37 @@ export default class VoiceDisable extends React.Component {
   );
 
   renderItemList() {
-    const itemList =
-      this.state.buttonsHover === 'callButton' ||
-      this.state.buttonsHover === 'smsButton'
-        ? this.state.phoneNumbers
-        : this.state.buttonsHover === 'musicButton'
-        ? this.state.musicLinks
-        : this.state.videoLinks;
+    let itemList = null;
+    let headerTitle = '';
+    let lineWidth = 20;
+
+    if (this.state.buttonsHover === 'callButton') {
+      itemList = this.state.phoneNumbers;
+      headerTitle = 'CALL';
+    } else if (this.state.buttonsHover === 'smsButton') {
+      itemList = this.state.phoneNumbers;
+      headerTitle = 'SEND SMS TO';
+      lineWidth = 40;
+    } else if (this.state.buttonsHover === 'musicButton') {
+      itemList = this.state.musicLinks;
+      headerTitle = 'OPEN SPOTIFY LINK';
+      lineWidth = 50;
+    } else {
+      itemList = this.state.videoLinks;
+      headerTitle = 'OPEN YOUTUE VIDEO';
+      lineWidth = 50;
+    }
 
     return (
       <View style={styles.itemList}>
+        <Text style={{bottom: 50, padding: 10}}>{headerTitle}</Text>
+        <View
+          style={{
+            height: 2.5,
+            backgroundColor: 'black',
+            width: lineWidth.toString() + '%',
+            bottom: 55,
+          }}></View>
         <TouchableOpacity
           style={[
             styles.button,
