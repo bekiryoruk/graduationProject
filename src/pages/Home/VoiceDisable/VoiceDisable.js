@@ -18,6 +18,7 @@ export default class VoiceDisable extends React.Component {
     listItemIndex: 0,
     actionSelected: false,
     positionY: 0,
+    canRollEye: true,
   };
 
   UNSAFE_componentWillMount = async () => {
@@ -64,7 +65,11 @@ export default class VoiceDisable extends React.Component {
       actionSelected: false,
       itemCount: 1,
       listItemIndex: 0,
+      canDetectFaces: false,
     });
+    setTimeout(() => {
+      this.setState({canDetectFaces: true});
+    }, 1000);
   };
 
   // TODO: show a toast message to user
@@ -156,14 +161,19 @@ export default class VoiceDisable extends React.Component {
         this.setState({
           actionSelected: true,
           itemCount: countOfItem + 1 || 1,
+          canDetectFaces: false,
         });
+        setTimeout(() => {
+          this.setState({canDetectFaces: true});
+        }, 500);
       }
     } else {
       const realDiff = faces[0].leftEyePosition.y - this.state.positionY;
 
       if (
-        (realDiff <= 1.2 && realDiff >= 0.2) ||
-        (realDiff >= -1.2 && realDiff <= -0.2)
+        this.state.canRollEye &&
+        ((realDiff <= 1.2 && realDiff >= 0.6) ||
+          (realDiff >= -1.2 && realDiff <= -0.6))
       ) {
         const count = this.state.itemCount;
         const oldIndex = this.state.listItemIndex;
@@ -173,7 +183,11 @@ export default class VoiceDisable extends React.Component {
           const res = (oldIndex + difference) % count;
           this.setState({
             listItemIndex: res >= 0 ? res : oldIndex + count - res,
+            canRollEye: false,
           });
+          setTimeout(() => {
+            this.setState({canRollEye: true});
+          }, 1000);
         }
       }
 
@@ -183,6 +197,7 @@ export default class VoiceDisable extends React.Component {
 
       if (bothEyes <= 0.2) {
         this.takeAction(this.state.listItemIndex);
+        this.setState({canRollEye: true});
       }
     }
 
