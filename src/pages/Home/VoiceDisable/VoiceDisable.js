@@ -1,17 +1,13 @@
 import React from 'react';
 import {
-  StyleSheet,
+  Dimensions,
   Text,
   View,
   TouchableOpacity,
-  Dimensions,
   Platform,
   Linking,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
-import RNCalendarEvents from 'react-native-calendar-events';
-import Voice from '@react-native-community/voice';
-import BackgroundService from 'react-native-background-actions';
 
 import styles from './VoiceDisable.styles';
 import {callPhone, sendSMS, getItem} from '../../../helpers';
@@ -19,81 +15,19 @@ import {BackPressHandler} from '../../../components';
 const landmarkSize = 10; // NOTE: bunu değiştirirsen style dosyasından da değişiklik yap, * landmark *
 export default class VoiceDisable extends React.Component {
   state = {
-    flash: 'off',
-    zoom: 0,
-    autoFocus: 'on',
-    autoFocusPoint: {
-      normalized: {x: 0.5, y: 0.5}, // normalized values required for autoFocusPointOfInterest
-      drawRectPosition: {
-        x: Dimensions.get('window').width * 0.5 - 32,
-        y: Dimensions.get('window').height * 0.5 - 32,
-      },
-    },
-    depth: 0,
-    type: 'front', // Camera Front or Back
-    whiteBalance: 'auto',
-    ratio: '16:9',
     canDetectFaces: false,
-    canDetectText: false,
-    buttonsHover: {
-      callButton: true,
-      smsButton: false,
-      musicButton: false,
-      videoButton: false,
-      calenderButton: false,
-    },
-    canDetectBarcode: false,
+    buttonsHover: '',
     faces: [],
-    blinkDetected: false,
-    blinkedimage: null,
-    voiceResult: '',
-    phoneNumber: '',
-    musicLink: '',
-    videoLink: '',
+    phoneNumbers: null,
+    musicLinks: null,
+    videoLinks: null,
+    itemCount: 1,
+    listItemIndex: 0,
+    actionSelected: false,
+    positionY: 0,
+    canRollEye: true,
   };
 
-  sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
-
-  veryIntensiveTask = async taskDataArguments => {
-    // Example of an infinite loop task
-    const {delay} = taskDataArguments;
-    await new Promise(async resolve => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(this.state.voiceResult);
-        await this.sleep(delay);
-      }
-    });
-  };
-
-  options = {
-    taskName: 'Example',
-    taskTitle: 'Touchless',
-    taskDesc: 'Voice Recording',
-    taskIcon: {
-      name: 'ic_launcher',
-      type: 'mipmap',
-    },
-    color: '#ff00ff',
-    linkingURI: 'yourSchemeHere://chat/jane', // See Deep Linking for more info
-    parameters: {
-      delay: 2000,
-    },
-  };
-
-  backgroundServiceStart = async () => {
-    await BackgroundService.start(this.veryIntensiveTask, this.options);
-  };
-
-  /*b = async () => {
-    await BackgroundService.updateNotification({
-      taskDesc: 'Voice Recording',
-    });
-  };
-
-  c = async () => {
-    await BackgroundService.stop();
-  };*/
-  // TODO: bu kısım uyarı veriyor bu kısıma dönücem
   UNSAFE_componentWillMount = async () => {
     if (Platform.OS == 'android') {
       BackPressHandler(this.BackStuff);
@@ -101,344 +35,201 @@ export default class VoiceDisable extends React.Component {
     const returnContactData = await getItem('Contact');
     if (returnContactData !== null && returnContactData !== undefined) {
       this.setState({
-        phoneNumber: returnContactData && returnContactData[0]?.param,
+        phoneNumbers: returnContactData && returnContactData,
       });
     }
 
     const returnVideoData = await getItem('Video');
     if (returnVideoData !== null && returnVideoData !== undefined) {
       this.setState({
-        videoLink: returnVideoData && returnVideoData[0]?.param,
+        videoLinks: returnVideoData && returnVideoData,
       });
     }
 
     const returnMusicData = await getItem('Music');
     if (returnMusicData !== null && returnMusicData !== undefined) {
       this.setState({
-        musicLink: returnMusicData && returnMusicData[0]?.param,
+        musicLinks: returnMusicData && returnMusicData,
       });
     }
-    Voice.onSpeechStart = this.onSpeechStartHandler;
-    Voice.onSpeechEnd = this.onSpeechEndHandler;
-    Voice.onSpeechResults = this.onSpeechResultsHandler;
-    this.startRecording();
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
   };
 
   BackStuff = () => {
     // console.log('back button pressed');
   };
 
-  onSpeechStartHandler = e => {
-    console.log('start handler==>>>', e);
-    this.backgroundServiceStart();
+  callAnyone = async function (index) {
+    callPhone(this.state.phoneNumbers[index].param);
   };
 
-  onSpeechEndHandler = e => {
-    //  TODO: stop ihtiyacım olursa diye tutuyorum simdilik
+  sendSms = async function (index) {
+    sendSMS([this.state.phoneNumbers[index].param], 'selam');
   };
 
-  onSpeechResultsHandler = e => {
-    let text = e.value[0];
+  closeTab = () => {
     this.setState({
-      voiceResult: text,
+      buttonsHover: '',
+      actionSelected: false,
+      itemCount: 1,
+      listItemIndex: 0,
+      canDetectFaces: false,
     });
-    console.log('speech result handler', e);
-    console.log(text);
-    if (text.includes('call')) {
-      this.callAnyone();
-    } else if (text.includes('music') || text.includes('spotify')) {
-      this.openSpotify();
-    } else if (text.includes('youtube') || text.includes('video')) {
-      this.openYoutube();
-    } else if (text.includes('sms') || text.includes('message')) {
-      this.sendSms();
-    } else if (text.includes('calendar') || text.includes('save')) {
-      this.setEventToCalender();
-    } else if (
-      text.includes('turn') ||
-      text.includes('back') ||
-      text.includes('touchless')
-    ) {
-      // bu kısım geliştirilecek
-      this.turnBackToApp();
-    }
-    this.startRecording();
+    setTimeout(() => {
+      this.setState({canDetectFaces: true});
+    }, 1000);
   };
 
-  startRecording = async () => {
-    try {
-      await Voice.start('en-Us');
-    } catch (error) {
-      console.log('error raised', error);
-    }
+  // TODO: show a toast message to user
+  openSpotify = async function (index) {
+    Linking.openURL(this.state.musicLinks[index].param).catch(err => {
+      console.log(
+        'Error: Could not open URL: ',
+        this.state.musicLinks[index].param,
+      );
+    });
   };
 
-  stopRecording = async () => {
-    try {
-      // await Voice.stop();
-    } catch (error) {
-      console.log('error raised', error);
-    }
+  // TODO: show a toast message to user
+  openYoutube = async function (index) {
+    Linking.openURL(this.state.videoLinks[index].param).catch(err => {
+      console.log(
+        'Error: Could not open URL: ',
+        this.state.videoLinks[index].param,
+      );
+    });
   };
 
-  toggleFacing() {
-    this.setState({
-      type: this.state.type === 'back' ? 'front' : 'back',
-    });
-  }
-
-  touchToFocus(event) {
-    const {pageX, pageY} = event.nativeEvent;
-    const screenWidth = Dimensions.get('window').width;
-    const screenHeight = Dimensions.get('window').height;
-    const isPortrait = screenHeight > screenWidth;
-
-    let x = pageX / screenWidth;
-    let y = pageY / screenHeight;
-    // Coordinate transform for portrait. See autoFocusPointOfInterest in docs for more info
-    if (isPortrait) {
-      x = pageY / screenHeight;
-      y = -(pageX / screenWidth) + 1;
-    }
-    this.setState({
-      autoFocusPoint: {
-        normalized: {x, y},
-        drawRectPosition: {x: pageX, y: pageY},
-      },
-    });
-  }
-
-  setFocusDepth(depth) {
-    this.setState({
-      depth,
-    });
-  }
-
-  takePicture = async function () {
-    /* if (this.camera) {
-      const data = await this.camera.takePictureAsync();
-      console.warn('takePicture ', data);
-      this.setState({blinkedimage: data.path});
-    }*/
-  };
-
-  /*manageButtonStates(type) {
-    this.setState({
-      buttonsHover: {
-        callButton: false,
-        smsButton: false,
-        musicButton: false,
-      },
-    });
-    if (type === 'call') {
-      this.setState({ buttonsHover: { callButton: true } });
-    } else if (type === 'sms') {
-      this.setState({ buttonsHover: { smsButton: true }});
+  takeAction = index => {
+    if (index === 0) {
+      this.closeTab();
     } else {
-      this.setState({ buttonsHover: {  musicButton: true }});
+      const functionIndex = index - 1;
+      if (
+        this.state.buttonsHover === 'callButton' &&
+        this.state.phoneNumbers &&
+        this.state.phoneNumbers[functionIndex]
+      ) {
+        this.callAnyone(functionIndex);
+      } else if (
+        this.state.buttonsHover === 'smsButton' &&
+        this.state.phoneNumbers &&
+        this.state.phoneNumbers[functionIndex]
+      ) {
+        this.sendSms(functionIndex);
+      } else if (
+        this.state.buttonsHover === 'musicButton' &&
+        this.state.musicLinks &&
+        this.state.musicLinks[functionIndex]
+      ) {
+        this.openSpotify(functionIndex);
+      } else if (
+        this.state.videoLinks &&
+        this.state.videoLinks[functionIndex]
+      ) {
+        this.openYoutube(functionIndex);
+      }
+      this.closeTab();
     }
-  }*/
-
-  setTrueSmsButton() {
-    this.setState({
-      buttonsHover: {
-        callButton: false,
-        smsButton: true,
-        musicButton: false,
-        videoButton: false,
-        calenderButton: false,
-      },
-    });
-  }
-
-  setTrueCallButton() {
-    this.setState({
-      buttonsHover: {
-        callButton: true,
-        smsButton: false,
-        musicButton: false,
-        videoButton: false,
-        calenderButton: false,
-      },
-    });
-  }
-
-  setTrueMusicButton() {
-    this.setState({
-      buttonsHover: {
-        callButton: false,
-        smsButton: false,
-        musicButton: true,
-        videoButton: false,
-        calenderButton: false,
-      },
-    });
-  }
-
-  setTrueVideoButton() {
-    this.setState({
-      buttonsHover: {
-        callButton: false,
-        smsButton: false,
-        musicButton: false,
-        videoButton: true,
-        calenderButton: false,
-      },
-    });
-  }
-
-  setTrueCalenderButton() {
-    this.setState({
-      buttonsHover: {
-        callButton: false,
-        smsButton: false,
-        musicButton: false,
-        videoButton: false,
-        calenderButton: true,
-      },
-    });
-  }
-
-  callAnyone = async function () {
-    callPhone(this.state.phoneNumber);
   };
 
-  sendSms = async function () {
-    sendSMS([this.state.phoneNumber], 'selam');
-    /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
-    const mobile = '+905345242175';
-    let url =
-      'whatsapp://send?text=' + 'denem-whatsapp-message' + '&phone=' + mobile;
-    Linking.openURL(url);*/
-  };
-
-  openSpotify = async function () {
-    Linking.openURL(this.state.musicLink);
-  };
-
-  openYoutube = async function () {
-    Linking.openURL(this.state.videoLink);
-  };
-
-  turnBackToApp = async function () {
-    // TODO: bunu araştırıp app'e dönmesini sağlıycam
-    Linking.openURL('Touchless');
-  };
-
-  setEventToCalender = async function () {
-    RNCalendarEvents.findCalendars();
-    RNCalendarEvents.saveEvent('Event Name', {
-      calendarId: '003',
-      startDate: '2022-03-15T13:42:00.000Z', // burada yazılan saatin 3 saat sonrasına etkinlik oluşturuyor.
-      endDate: '2022-03-15T14:39:00.000Z',
-      location: 'Izmir, Turkey',
-    });
-  };
-
-  toggle = value => () => {
-    this.setState(prevState => ({[value]: !prevState[value]}));
-    console.log(value, this.state[`${value}`]);
+  componentDidMount = () => {
+    this.setState({phoneWidth: Dimensions.get('window').width});
   };
 
   facesDetected = ({faces}) => {
     const rightEye = faces[0].rightEyeOpenProbability;
     const leftEye = faces[0].leftEyeOpenProbability;
-    const smileprob = faces[0].smilingProbability;
     const bothEyes = (rightEye + leftEye) / 2;
-    if (faces[0].leftEyePosition.x < 200) {
-      this.setTrueCallButton();
-    } else if (
-      faces[0].leftEyePosition.x > 200 &&
-      faces[0].leftEyePosition.x < 300
-    ) {
-      this.setTrueSmsButton();
-    } else if (
-      faces[0].leftEyePosition.x > 300 &&
-      faces[0].leftEyePosition.x < 390
-    ) {
-      this.setTrueMusicButton();
-    } else if (
-      faces[0].leftEyePosition.x > 390 &&
-      faces[0].leftEyePosition.x < 430
-    ) {
-      this.setTrueCalenderButton();
-    } else {
-      this.setTrueVideoButton();
-    }
-
-    // console.log(
-    //   JSON.stringify({
-    //     rightEyeOpenProbability: rightEye,
-    //     leftEyeOpenProbability: leftEye,
-    //     smilingProbability: smileprob,
-    //     blinkProb: bothEyes,
-    //   }),
-    // );
-    if (bothEyes <= 0.3) {
-      console.log(
-        JSON.stringify({
-          blinkDetected: 'blinkDetected',
-          rightEyeOpenProbability: rightEye,
-          leftEyeOpenProbability: leftEye,
-        }),
-      );
-      this.setState({blinkDetected: true});
-      if (this.state.buttonsHover.callButton) {
-        this.callAnyone();
-      } else if (this.state.buttonsHover.smsButton) {
-        this.sendSms();
-      } else if (this.state.buttonsHover.musicButton) {
-        this.openSpotify();
-      } else if (this.state.buttonsHover.calenderButton) {
-        this.setEventToCalender();
+    let buttonType = '';
+    let countOfItem = 0;
+    const phoneQuarterWidth = this.state.phoneWidth / 4;
+    const distanceBetweenLeftAndRightEyes =
+      faces[0].leftEyePosition.x - faces[0].rightEyePosition.x;
+    if (!this.state.actionSelected) {
+      if (
+        faces[0].leftEyePosition.x <
+        distanceBetweenLeftAndRightEyes + phoneQuarterWidth
+      ) {
+        buttonType = 'callButton';
+        countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
+      } else if (
+        faces[0].leftEyePosition.x >
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth &&
+        faces[0].leftEyePosition.x <
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 2
+      ) {
+        buttonType = 'smsButton';
+        countOfItem = this.state.phoneNumbers && this.state.phoneNumbers.length;
+      } else if (
+        faces[0].leftEyePosition.x >
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 2 &&
+        faces[0].leftEyePosition.x <
+          distanceBetweenLeftAndRightEyes + phoneQuarterWidth * 3
+      ) {
+        buttonType = 'musicButton';
+        countOfItem = this.state.musicLinks && this.state.musicLinks.length;
       } else {
-        this.openYoutube();
+        buttonType = 'videoButton';
+        countOfItem = this.state.videoLinks && this.state.videoLinks.length;
+      }
+
+      this.setState({
+        buttonsHover: buttonType,
+      });
+
+      if (bothEyes <= 0.2) {
+        this.setState({
+          actionSelected: true,
+          itemCount: countOfItem + 1 || 1,
+          canDetectFaces: false,
+        });
+        setTimeout(() => {
+          this.setState({canDetectFaces: true});
+        }, 500);
+      }
+    } else {
+      const realDiff = faces[0].leftEyePosition.y - this.state.positionY;
+
+      if (
+        this.state.canRollEye &&
+        ((realDiff <= 1.2 && realDiff >= 0.6) ||
+          (realDiff >= -1.2 && realDiff <= -0.6))
+      ) {
+        const count = this.state.itemCount;
+        const oldIndex = this.state.listItemIndex;
+        const difference = Math.floor((realDiff * 10) / count);
+
+        if (this.state.itemCount > 0) {
+          const res =
+            (oldIndex + difference) % count > 0 ? oldIndex + 1 : oldIndex - 1;
+          let realRes = res;
+          if (res < 0) {
+            realRes = count - 1;
+          } else if (res > count - 1) {
+            realRes = 0;
+          }
+          this.setState({
+            listItemIndex: realRes,
+            canRollEye: false,
+          });
+          setTimeout(() => {
+            this.setState({canRollEye: true});
+          }, 1000);
+        }
+      }
+
+      this.setState({
+        positionY: faces[0].leftEyePosition.y,
+      });
+
+      if (bothEyes <= 0.2) {
+        this.takeAction(this.state.listItemIndex);
+        this.setState({canRollEye: true});
       }
     }
-    if (this.state.blinkDetected && bothEyes >= 0.9) {
-      this.takePicture(faces);
-      this.setState({blinkDetected: false});
-    }
+
     this.setState({faces});
   };
-
-  renderFace = ({
-    bounds,
-    faceID,
-    rollAngle,
-    yawAngle,
-    leftEyeOpenProbability,
-    rightEyeOpenProbability,
-    smilingProbability,
-  }) => (
-    <View
-      key={faceID}
-      transform={[
-        {perspective: 600},
-        {rotateZ: `${rollAngle.toFixed(0)}deg`},
-        {rotateY: `${yawAngle.toFixed(0)}deg`},
-      ]}
-      style={[
-        styles.face,
-        {
-          ...bounds.size,
-          left: bounds.origin.x,
-          top: bounds.origin.y,
-        },
-      ]}>
-      <Text style={styles.faceText}>ID: {faceID}</Text>
-      <Text style={styles.faceText}>
-        eyeOpenProbability:
-        {leftEyeOpenProbability + rightEyeOpenProbability / 2}
-      </Text>
-      <Text style={styles.faceText}>
-        smilingProbability: {smilingProbability}
-      </Text>
-    </View>
-  );
 
   renderLandmarksOfFace(face) {
     const renderLandmark = position =>
@@ -461,25 +252,136 @@ export default class VoiceDisable extends React.Component {
     );
   }
 
-  renderFaces = () => (
-    <View style={styles.facesContainer} pointerEvents="none"></View>
-  );
-
   renderLandmarks = () => (
     <View style={styles.facesContainer} pointerEvents="none">
       {this.state.faces.map(this.renderLandmarksOfFace)}
     </View>
   );
 
+  renderItemList() {
+    let itemList = null;
+    let headerTitle = '';
+    let lineWidth = 20;
+
+    if (this.state.buttonsHover === 'callButton') {
+      itemList = this.state.phoneNumbers;
+      headerTitle = 'CALL';
+    } else if (this.state.buttonsHover === 'smsButton') {
+      itemList = this.state.phoneNumbers;
+      headerTitle = 'SEND SMS TO';
+      lineWidth = 40;
+    } else if (this.state.buttonsHover === 'musicButton') {
+      itemList = this.state.musicLinks;
+      headerTitle = 'OPEN SPOTIFY LINK';
+      lineWidth = 50;
+    } else {
+      itemList = this.state.videoLinks;
+      headerTitle = 'OPEN YOUTUE VIDEO';
+      lineWidth = 50;
+    }
+
+    return (
+      <View style={styles.itemList}>
+        <Text style={{bottom: 50, padding: 10}}>{headerTitle}</Text>
+        <View
+          style={{
+            height: 2.5,
+            backgroundColor: 'black',
+            width: lineWidth.toString() + '%',
+            bottom: 55,
+          }}></View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            this.state.listItemIndex === 0
+              ? styles.itemButtonOn
+              : styles.itemButtonOff,
+            {
+              alignItems: 'center',
+            },
+          ]}
+          onPress={this.closeTab.bind(this)}>
+          <Text style={{color: 'red', fontSize: 14}}> CLOSE THIS TAB </Text>
+        </TouchableOpacity>
+        {itemList &&
+          itemList.map((item, index) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.button,
+                  this.state.listItemIndex === index + 1
+                    ? styles.itemButtonOn
+                    : styles.itemButtonOff,
+                ]}
+                onPress={() => console.log(item)}>
+                <Text
+                  style={{
+                    color:
+                      this.state.listItemIndex === index + 1
+                        ? 'white'
+                        : 'black',
+                    fontSize: 14,
+                  }}>
+                  {item.name.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+      </View>
+    );
+  }
+
+  renderActionButtons() {
+    return (
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'callButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            styles.button,
+          ]}
+          onPress={this.callAnyone.bind(this)}>
+          <Text style={styles.flipText}> CALL </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'smsButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            styles.button,
+          ]}
+          onPress={this.sendSms.bind(this)}>
+          <Text style={styles.flipText}> SMS </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'musicButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            styles.button,
+          ]}
+          onPress={this.openSpotify.bind(this)}>
+          <Text style={styles.flipText}> MUSIC </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            this.state.buttonsHover === 'videoButton'
+              ? styles.selectedButton
+              : styles.flipButton,
+            styles.button,
+          ]}
+          onPress={this.openYoutube.bind(this)}>
+          <Text style={styles.flipText}> VIDEO </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   renderCamera() {
     const {canDetectFaces} = this.state;
-    const drawFocusRingPosition = {
-      top: this.state.autoFocusPoint.drawRectPosition.y - 32,
-      left: this.state.autoFocusPoint.drawRectPosition.x - 32,
-    };
-    // handleFaceDetected = faceArray => {
-    //   console.log('handleFaceDetected', faceArray);
-    // };
+
     return (
       <RNCamera
         ref={ref => {
@@ -489,9 +391,9 @@ export default class VoiceDisable extends React.Component {
           flex: 1,
           justifyContent: 'space-between',
         }}
-        type={this.state.type}
-        zoom={this.state.zoom}
-        ratio={this.state.ratio}
+        type="front"
+        zoom={0}
+        ratio="16:9"
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
           message: 'We need your permission to use your camera',
@@ -509,7 +411,6 @@ export default class VoiceDisable extends React.Component {
             : undefined
         }
         onCameraReady={() => {
-          console.log('onCameraReady');
           this.setState({canDetectFaces: true});
         }}
         onFacesDetected={this.state.canDetectFaces ? this.facesDetected : null}
@@ -520,99 +421,10 @@ export default class VoiceDisable extends React.Component {
             flex: 0.5,
             height: 72,
             backgroundColor: 'transparent',
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}>
-          <View
-            style={{
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-            }}>
-            <TouchableOpacity
-              style={styles.flipButton}
-              onPress={this.toggleFacing.bind(this)}>
-              <Text style={styles.flipText}> FLIP </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+          }}></View>
 
-        <View style={{bottom: 0}}>
-          <View
-            style={{
-              height: 56,
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-              alignSelf: 'flex-end',
-            }}>
-            <TouchableOpacity
-              style={[
-                this.state.buttonsHover.callButton
-                  ? styles.selectedButton
-                  : styles.flipButton,
-                this.state.buttonsHover.callButton
-                  ? styles.selectedPicButton
-                  : styles.picButton,
-                {flex: 0.24, alignSelf: 'flex-end'},
-              ]}
-              onPress={this.callAnyone.bind(this)}>
-              <Text style={styles.flipText}> CALL </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                this.state.buttonsHover.smsButton
-                  ? styles.selectedButton
-                  : styles.flipButton,
-                this.state.buttonsHover.smsButton
-                  ? styles.selectedPicButton
-                  : styles.picButton,
-                {flex: 0.24, alignSelf: 'flex-end'},
-              ]}
-              onPress={this.sendSms.bind(this)}>
-              <Text style={styles.flipText}> SMS </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                this.state.buttonsHover.musicButton
-                  ? styles.selectedButton
-                  : styles.flipButton,
-                this.state.buttonsHover.musicButton
-                  ? styles.selectedPicButton
-                  : styles.picButton,
-                {flex: 0.24, alignSelf: 'flex-end'},
-              ]}
-              onPress={this.openSpotify.bind(this)}>
-              <Text style={styles.flipText}> MUSIC </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                this.state.buttonsHover.videoButton
-                  ? styles.selectedButton
-                  : styles.flipButton,
-                this.state.buttonsHover.videoButton
-                  ? styles.selectedPicButton
-                  : styles.picButton,
-                {flex: 0.24, alignSelf: 'flex-end'},
-              ]}
-              onPress={this.openYoutube.bind(this)}>
-              <Text style={styles.flipText}> VIDEO </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                this.state.buttonsHover.calenderButton
-                  ? styles.selectedButton
-                  : styles.flipButton,
-                this.state.buttonsHover.calenderButton
-                  ? styles.selectedPicButton
-                  : styles.picButton,
-                {flex: 0.24, alignSelf: 'flex-end'},
-              ]}
-              onPress={this.setEventToCalender.bind(this)}>
-              <Text style={styles.flipText}> CALENDAR </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {this.renderFaces()}
+        {!this.state.actionSelected && this.renderActionButtons()}
+        {this.state.actionSelected && this.renderItemList()}
         {canDetectFaces && this.renderLandmarks()}
       </RNCamera>
     );
