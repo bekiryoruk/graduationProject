@@ -26,7 +26,6 @@ export default class VoiceDisable extends React.Component {
     const {delay} = taskDataArguments;
     await new Promise(async resolve => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        console.log(this.state.voiceResult);
         await this.sleep(delay);
       }
     });
@@ -150,6 +149,7 @@ export default class VoiceDisable extends React.Component {
 
   callAnyone = async function () {
     callPhone(this.state.phoneNumber);
+    this.startRecording();
   };
 
   setModalVisible = e => {
@@ -167,15 +167,17 @@ export default class VoiceDisable extends React.Component {
 
   openSpotify = async function () {
     Linking.openURL(this.state.musicLink);
+    this.startRecording();
   };
 
   openYoutube = async function () {
     Linking.openURL(this.state.videoLink);
+    this.startRecording();
   };
 
   turnBackToApp = async function () {
-    // TODO: bunu araştırıp app'e dönmesini sağlıycam
-    Linking.openURL('Touchless');
+    // TODO: bunu araştırıp app'e dönmesini sağl
+    Linking.openURL('touchless://app');
   };
 
   setEventToCalender = async function () {
