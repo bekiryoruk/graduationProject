@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Platform,
-  Linking,
-} from 'react-native';
+import {Text, View, TouchableOpacity, Platform, Linking} from 'react-native';
 import RNCalendarEvents from 'react-native-calendar-events';
 import Voice from '@react-native-community/voice';
 import BackgroundService from 'react-native-background-actions';
@@ -14,6 +8,7 @@ import styles from './VisionDisable.styles';
 import {callPhone, sendSMS, getItem} from '../../../helpers';
 import {BackPressHandler} from '../../../components';
 import IconButton from '../../../../src/navigation/IconButton';
+import Modal from 'react-native-modal';
 
 export default class VoiceDisable extends React.Component {
   state = {
@@ -21,6 +16,7 @@ export default class VoiceDisable extends React.Component {
     phoneNumber: '',
     musicLink: '',
     videoLink: '',
+    isModalVisible: false,
   };
 
   sleep = time => new Promise(resolve => setTimeout(() => resolve(), time));
@@ -106,6 +102,9 @@ export default class VoiceDisable extends React.Component {
     this.setState({
       voiceResult: text,
     });
+    if (this.state.voiceResult !== '' && this.state.isModalVisible) {
+      this.sendSms();
+    }
     console.log('speech result handler', e);
     console.log(text);
     if (text.includes('call')) {
@@ -115,7 +114,10 @@ export default class VoiceDisable extends React.Component {
     } else if (text.includes('youtube') || text.includes('video')) {
       this.openYoutube();
     } else if (text.includes('sms') || text.includes('message')) {
-      this.sendSms();
+      this.setState({
+        voiceResult: '',
+      });
+      this.setModalVisible(true);
     } else if (text.includes('calendar') || text.includes('save')) {
       this.setEventToCalender();
     } else if (
@@ -150,14 +152,17 @@ export default class VoiceDisable extends React.Component {
     this.startRecording();
   };
 
-  sendSms = async function () {
-    sendSMS([this.state.phoneNumber], 'selam');
-    this.startRecording();
-    /* Whatsapp kısmını yoruma aldım ne yaparız burayı bilmıyom
-    const mobile = '+905345242175';
-    let url =
-      'whatsapp://send?text=' + 'denem-whatsapp-message' + '&phone=' + mobile;
-    Linking.openURL(url);*/
+  setModalVisible = e => {
+    this.setState({
+      isModalVisible: e,
+    });
+  };
+
+  sendSms = function () {
+    //setTimeout(() => {
+    sendSMS([this.state.phoneNumber], this.state.voiceResult);
+    //}, 1000);
+    this.setModalVisible(false);
   };
 
   openSpotify = async function () {
@@ -188,6 +193,12 @@ export default class VoiceDisable extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <Modal isVisible={this.state.isModalVisible}>
+          <View style={styles.modalStyle}>
+            <Text style={styles.modalLabelText}>Message to be forwarded:</Text>
+            <Text style={styles.modalText}>{this.state.voiceResult}</Text>
+          </View>
+        </Modal>
         <Text style={styles.header}>Say the activity you want to do.</Text>
         <View style={styles.icon}>
           <View style={styles.smallColumn}></View>

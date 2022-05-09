@@ -6,6 +6,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  modalStyle: {
+    position: 'absolute',
+    height: 'auto',
+    minHeight: 36,
+    width: '100%',
+    padding: 20,
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: '#eee',
+  },
+  modalText: {
+    color: 'black',
+    fontSize: 24,
+  },
+  modalLabelText: {
+    color: 'black',
+    fontWeight: '600',
+    fontSize: 20,
+  },
+  modalInfoText: {
+    fontSize: 20,
+    backgroundColor: '#333',
+    marginTop: 5,
+  },
+  modalCancelText: {
+    color: 'red',
+    fontWeight: '600',
+  },
+  modalSendText: {
+    fontWeight: '600',
+    color: 'blue',
+  },
   header: {
     fontSize: 32,
     textAlign: 'center',
